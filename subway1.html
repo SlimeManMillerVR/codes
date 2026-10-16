@@ -25,17 +25,18 @@ body {
     overflow: hidden;
     font-family: "Arial Black", Impact, sans-serif;
     color: white;
-
-    background:
-        linear-gradient(135deg, #9be7ff 0%, #83b9f5 35%,
-        #9c8be9 65%, #c6a5f5 100%);
-    position: relative;
+    background: linear-gradient(
+        135deg,
+        #9be7ff 0%,
+        #83b9f5 35%,
+        #9c8be9 65%,
+        #c6a5f5 100%
+    );
 }
 
-/* Minecraft-style pixel background */
 body::before {
     content: "";
-    position: absolute;
+    position: fixed;
     inset: 0;
     background-image:
         linear-gradient(rgba(255,255,255,0.09) 2px, transparent 2px),
@@ -44,10 +45,23 @@ body::before {
     pointer-events: none;
 }
 
-.menu {
+.screen {
     position: relative;
     z-index: 1;
-    width: min(440px, 90%);
+    width: 100%;
+    min-height: 100vh;
+    display: none;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+.screen.active {
+    display: flex;
+}
+
+.menu {
+    width: min(440px, 100%);
     text-align: center;
     padding: 25px 20px;
 }
@@ -126,36 +140,233 @@ button:active {
     box-shadow: 0 2px 0 #285776;
 }
 
+/* SETTINGS */
+
+.settings-panel {
+    width: min(420px, 100%);
+    padding: 30px 25px;
+    background: rgba(49, 45, 90, 0.88);
+    border: 3px solid #665ca8;
+    box-shadow: 0 8px 0 #514477;
+}
+
+.settings-title {
+    margin: 0 0 30px;
+    font-size: 34px;
+    text-shadow: 3px 3px #42375f;
+}
+
+.setting {
+    text-align: left;
+    margin-bottom: 28px;
+}
+
+.setting-label {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    font-size: 17px;
+    margin-bottom: 15px;
+}
+
+#povValue {
+    color: #ffeb36;
+    font-size: 21px;
+}
+
+input[type="range"] {
+    width: 100%;
+    accent-color: #ffeb36;
+    cursor: pointer;
+}
+
+.music-buttons {
+    display: flex;
+    gap: 10px;
+}
+
+.music-buttons button {
+    flex: 1;
+    min-height: 45px;
+    font-size: 16px;
+    margin: 0;
+    background: #514477;
+    border-color: #40345f;
+    box-shadow: 0 4px 0 #33284c;
+}
+
+.music-buttons button.selected {
+    background: #559b83;
+    border-color: #34735e;
+    box-shadow: 0 4px 0 #285644;
+}
+
+.settings-back {
+    margin-top: 12px;
+}
+
+/* PLAY ERROR SCREEN */
+
+#errorScreen {
+    background: #000;
+    color: white;
+    z-index: 5;
+}
+
+.error-content {
+    width: min(400px, 100%);
+    text-align: center;
+}
+
+.error-title {
+    font-family: Arial, sans-serif;
+    font-size: clamp(22px, 5vw, 30px);
+    font-weight: bold;
+    letter-spacing: 2px;
+    margin-bottom: 35px;
+}
+
+#errorScreen button {
+    width: min(280px, 100%);
+}
+
+@media (max-width: 400px) {
+    .settings-panel {
+        padding: 25px 18px;
+    }
+
+    .settings-title {
+        font-size: 29px;
+    }
+}
 </style>
 </head>
 
 <body>
 
-<div class="menu">
+<!-- MAIN SUBWAY MENU -->
+<section id="mainScreen" class="screen active">
+    <div class="menu">
+        <div class="logo">SUBWAY I</div>
+        <div class="beta">(BETA)</div>
 
-    <div class="logo">SUBWAY I</div>
-    <div class="beta">(BETA)</div>
-
-    <div class="buttons">
-        <button id="playButton">PLAY</button>
-        <button id="settingsButton">SETTINGS</button>
-        <button class="back" id="backButton">BACK</button>
+        <div class="buttons">
+            <button id="playButton">PLAY</button>
+            <button id="settingsButton">SETTINGS</button>
+            <button class="back" id="mainBackButton">BACK</button>
+        </div>
     </div>
+</section>
 
-</div>
+<!-- SETTINGS MENU -->
+<section id="settingsScreen" class="screen">
+    <div class="settings-panel">
+        <h1 class="settings-title">SETTINGS</h1>
+
+        <div class="setting">
+            <div class="setting-label">
+                <span>POV</span>
+                <span id="povValue">30</span>
+            </div>
+
+            <input
+                type="range"
+                id="povSlider"
+                min="10"
+                max="50"
+                value="30"
+                step="1"
+            >
+        </div>
+
+        <div class="setting">
+            <div class="setting-label">
+                <span>MUSIC</span>
+                <span id="musicValue">OFF</span>
+            </div>
+
+            <div class="music-buttons">
+                <button id="musicOn">ON</button>
+                <button id="musicOff" class="selected">OFF</button>
+            </div>
+        </div>
+
+        <button class="back settings-back" id="settingsBackButton">
+            BACK
+        </button>
+    </div>
+</section>
+
+<!-- BLACK ERROR SCREEN -->
+<section id="errorScreen" class="screen">
+    <div class="error-content">
+        <div class="error-title">COULDNT LOAD FILES</div>
+        <button class="back" id="errorBackButton">BACK</button>
+    </div>
+</section>
 
 <script>
+const mainScreen = document.getElementById("mainScreen");
+const settingsScreen = document.getElementById("settingsScreen");
+const errorScreen = document.getElementById("errorScreen");
+
+function showScreen(screen) {
+    mainScreen.classList.remove("active");
+    settingsScreen.classList.remove("active");
+    errorScreen.classList.remove("active");
+
+    screen.classList.add("active");
+}
+
 document.getElementById("playButton").addEventListener("click", function() {
-    // Coming soon
+    showScreen(errorScreen);
 });
 
 document.getElementById("settingsButton").addEventListener("click", function() {
-    // Settings coming soon
+    showScreen(settingsScreen);
 });
 
-document.getElementById("backButton").addEventListener("click", function() {
+document.getElementById("mainBackButton").addEventListener("click", function() {
     window.location.href = "index.html";
 });
+
+document.getElementById("settingsBackButton").addEventListener("click", function() {
+    showScreen(mainScreen);
+});
+
+document.getElementById("errorBackButton").addEventListener("click", function() {
+    showScreen(mainScreen);
+});
+
+/* POV SLIDER */
+const povSlider = document.getElementById("povSlider");
+const povValue = document.getElementById("povValue");
+
+povSlider.addEventListener("input", function() {
+    povValue.textContent = povSlider.value;
+});
+
+/* MUSIC ON / OFF */
+const musicOn = document.getElementById("musicOn");
+const musicOff = document.getElementById("musicOff");
+const musicValue = document.getElementById("musicValue");
+
+function setMusic(enabled) {
+    musicValue.textContent = enabled ? "ON" : "OFF";
+
+    musicOn.classList.toggle("selected", enabled);
+    musicOff.classList.toggle("selected", !enabled);
+}
+
+musicOn.addEventListener("click", function() {
+    setMusic(true);
+});
+
+musicOff.addEventListener("click", function() {
+    setMusic(false);
+});
+
 </script>
 
 </body>
