@@ -1,0 +1,141 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CODE MACHINE</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+html, body {
+    margin: 0;
+    width: 100%;
+    min-height: 100%;
+    font-family: Arial, sans-serif;
+}
+
+body {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background:
+        radial-gradient(circle at 50% 40%, #55406f 0%, #352448 45%, #21182f 100%);
+    color: white;
+}
+
+.machine {
+    width: min(380px, 90%);
+    padding: 32px 26px;
+    background: rgba(20, 15, 29, 0.88);
+    border: 1px solid #765b91;
+    border-radius: 12px;
+    box-shadow: 0 0 35px rgba(120, 77, 160, 0.18);
+    text-align: center;
+}
+
+h1 {
+    margin: 0 0 28px;
+    font-size: 27px;
+    letter-spacing: 4px;
+    font-weight: 800;
+}
+
+input {
+    width: 100%;
+    padding: 14px;
+    background: #17121f;
+    border: 1px solid #68517c;
+    border-radius: 5px;
+    outline: none;
+    color: white;
+    font-size: 15px;
+    text-align: center;
+    letter-spacing: 1px;
+}
+
+input::placeholder {
+    color: #8e819b;
+}
+
+input:focus {
+    border-color: #b58cde;
+    box-shadow: 0 0 10px #78549b55;
+}
+
+button {
+    width: 100%;
+    margin-top: 14px;
+    padding: 13px;
+    border: none;
+    border-radius: 5px;
+    background: #76509a;
+    color: white;
+    font-size: 14px;
+    font-weight: bold;
+    letter-spacing: 2px;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.2s;
+}
+
+button:hover {
+    background: #9065b8;
+}
+
+button:active {
+    transform: scale(0.98);
+}
+
+#result {
+    min-height: 18px;
+    margin-top: 20px;
+    font-size: 13px;
+    font-weight: bold;
+    letter-spacing: 2px;
+    color: #ff5555;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="machine">
+    <h1>CODE MACHINE</h1>
+
+    <input
+        type="text"
+        id="codeInput"
+        placeholder="ENTER CODE"
+        autocomplete="off"
+    >
+
+    <button id="checkButton">CHECK</button>
+
+    <div id="result"></div>
+</div>
+
+<script>
+const codeInput = document.getElementById("codeInput");
+const checkButton = document.getElementById("checkButton");
+const result = document.getElementById("result");
+
+function checkCode() {
+    result.textContent = "INVALID CODE";
+}
+
+checkButton.addEventListener("click", checkCode);
+
+codeInput.addEventListener("keydown", function(event) {
+    if (event.key === "Enter") {
+        checkCode();
+    }
+});
+</script>
+
+</body>
+</html>
