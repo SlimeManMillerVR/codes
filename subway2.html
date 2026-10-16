@@ -7,403 +7,769 @@
 <title>SUBWAY II</title>
 
 <style>
-* {
-    box-sizing: border-box;
+*{box-sizing:border-box}
+
+html,body{
+    margin:0;
+    width:100%;
+    height:100%;
+    overflow:hidden;
+    font-family:"Arial Black",Impact,sans-serif;
 }
 
-html, body {
-    margin: 0;
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-    font-family: "Arial Black", Impact, sans-serif;
+body{
+    background:linear-gradient(135deg,#70e69a,#46a875 35%,#7856b8 75%,#b39be9);
+    color:white;
+    user-select:none;
+    -webkit-user-select:none;
 }
 
-body {
-    background: linear-gradient(135deg, #70e69a, #46a875 35%, #7856b8 75%, #b39be9);
-    color: white;
+button{
+    font-family:inherit;
+    cursor:pointer;
+    touch-action:none;
 }
 
-/* MAIN MENU */
-
-#mainScreen {
-    position: fixed;
-    inset: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: linear-gradient(135deg, #70e69a, #46a875 35%, #7856b8 75%, #b39be9);
+#mainScreen{
+    position:fixed;
+    inset:0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:linear-gradient(135deg,#70e69a,#46a875 35%,#7856b8 75%,#b39be9);
+    z-index:10;
 }
 
-#mainScreen::before {
-    content: "";
-    position: absolute;
-    inset: 0;
+#mainScreen:before{
+    content:"";
+    position:absolute;
+    inset:0;
     background-image:
-        linear-gradient(#ffffff16 2px, transparent 2px),
-        linear-gradient(90deg, #ffffff16 2px, transparent 2px);
-    background-size: 48px 48px;
+        linear-gradient(#ffffff16 2px,transparent 2px),
+        linear-gradient(90deg,#ffffff16 2px,transparent 2px);
+    background-size:48px 48px;
+    pointer-events:none;
 }
 
-.menu {
-    position: relative;
-    width: min(440px, 90%);
-    text-align: center;
+.menu{
+    position:relative;
+    width:min(440px,90%);
+    text-align:center;
 }
 
-.logo {
-    font-size: clamp(43px, 10vw, 68px);
-    font-weight: 1000;
-    letter-spacing: -2px;
-    transform: rotate(-5deg);
-    text-shadow:
-        4px 4px 0 #555078,
-        7px 7px 0 #38314f;
-    margin-bottom: 45px;
+.logo{
+    font-size:clamp(43px,10vw,68px);
+    font-weight:1000;
+    letter-spacing:-2px;
+    transform:rotate(-5deg);
+    text-shadow:4px 4px 0 #555078,7px 7px 0 #38314f;
+    margin-bottom:45px;
 }
 
-.buttons {
-    width: min(290px, 100%);
-    margin: auto;
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
+.buttons{
+    width:min(290px,100%);
+    margin:auto;
+    display:flex;
+    flex-direction:column;
+    gap:16px;
 }
 
-button {
-    min-height: 55px;
-    width: 100%;
-    border: 3px solid #514582;
-    background: #6e64b9;
-    color: white;
-    font-family: "Arial Black", Impact, sans-serif;
-    font-size: 21px;
-    font-weight: 900;
-    letter-spacing: 2px;
-    box-shadow: 0 6px 0 #42375f;
-    cursor: pointer;
-    touch-action: manipulation;
+.menuButton{
+    min-height:55px;
+    border:3px solid #514582;
+    background:#6e64b9;
+    color:white;
+    font-size:21px;
+    font-weight:900;
+    letter-spacing:2px;
+    box-shadow:0 6px 0 #42375f;
 }
 
-button:hover {
-    background: #8278d4;
+.menuButton:hover{background:#8278d4}
+
+.menuButton:active{
+    transform:translateY(4px);
+    box-shadow:0 2px 0 #42375f;
 }
 
-button:active {
-    transform: translateY(4px);
-    box-shadow: 0 2px 0 #42375f;
-}
-
-.backButton {
-    background: #559b83;
-    border-color: #34735e;
-    box-shadow: 0 6px 0 #285644;
-}
-
-.backButton:hover {
-    background: #69b895;
+.backButton{
+    background:#559b83;
+    border-color:#34735e;
+    box-shadow:0 6px 0 #285644;
 }
 
 /* GAME */
 
-#gameScreen {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: #858585;
-    overflow: hidden;
-    perspective: 700px;
-    touch-action: none;
+#gameScreen{
+    display:none;
+    position:fixed;
+    inset:0;
+    background:#858585;
+    overflow:hidden;
+    touch-action:none;
 }
 
-/* First-person gray room */
-
-#room {
-    position: absolute;
-    inset: 0;
-    overflow: hidden;
-    background: #888888;
+#gameCanvas{
+    display:block;
+    width:100%;
+    height:100%;
+    outline:none;
+    touch-action:none;
 }
 
-#ceiling {
-    position: absolute;
-    top: 0;
-    left: -30%;
-    width: 160%;
-    height: 50%;
-    background: #a2a2a2;
-    clip-path: polygon(19% 0, 81% 0, 100% 100%, 0 100%);
+/* BACK BUTTON */
+
+#gameBack{
+    position:absolute;
+    z-index:5;
+    top:15px;
+    left:15px;
+    width:100px;
+    height:43px;
+    border:3px solid #333;
+    background:#555;
+    color:white;
+    font-size:15px;
+    box-shadow:0 4px 0 #222;
 }
 
-#floor {
-    position: absolute;
-    bottom: 0;
-    left: -30%;
-    width: 160%;
-    height: 55%;
-    background: #696969;
-    clip-path: polygon(0 0, 100% 0, 82% 100%, 18% 100%);
+/* MOVEMENT ARROWS */
+
+#movement{
+    position:absolute;
+    z-index:5;
+    top:18px;
+    right:18px;
+    width:142px;
+    height:142px;
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    grid-template-rows:repeat(3,1fr);
+    gap:5px;
+    touch-action:none;
 }
 
-#backWall {
-    position: absolute;
-    top: 18%;
-    left: 25%;
-    width: 50%;
-    height: 48%;
-    background: #969696;
-    border: 3px solid #777777;
+.moveButton{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    border:2px solid #dedede;
+    border-radius:7px;
+    background:#292929bb;
+    color:white;
+    font-family:Arial,sans-serif;
+    font-size:25px;
+    font-weight:bold;
+    box-shadow:0 3px 0 #111;
+    padding:0;
+    touch-action:none;
 }
 
-#leftWall {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 26%;
-    height: 100%;
-    background: #777777;
-    clip-path: polygon(0 0, 100% 18%, 100% 66%, 0 100%);
+.moveButton.active,
+.moveButton:active{
+    background:#727272;
+    transform:translateY(2px);
+    box-shadow:0 1px 0 #111;
 }
 
-#rightWall {
-    position: absolute;
-    top: 0;
-    right: 0;
-    width: 26%;
-    height: 100%;
-    background: #777777;
-    clip-path: polygon(0 18%, 100% 0, 100% 100%, 0 66%);
+#forward{grid-area:1/2}
+#left{grid-area:2/1}
+#backward{grid-area:2/2}
+#right{grid-area:2/3}
+
+/* INSTRUCTIONS */
+
+#hint{
+    position:absolute;
+    z-index:4;
+    bottom:16px;
+    left:50%;
+    transform:translateX(-50%);
+    width:90%;
+    text-align:center;
+    color:white;
+    font: bold 13px Arial,sans-serif;
+    text-shadow:1px 2px 3px black;
+    pointer-events:none;
 }
 
-/* The cube */
+/* HELD GUN OVERLAY */
 
-#cube {
-    position: absolute;
-    width: 72px;
-    height: 72px;
-    left: 50%;
-    top: 64%;
-    transform: translate(-50%, -50%);
-    background: #b8b8b8;
-    border: 2px solid #8c8c8c;
-    box-shadow: 8px 8px 0 #5c5c5c;
-    cursor: pointer;
-    touch-action: manipulation;
+#heldGun{
+    display:none;
+    position:absolute;
+    z-index:3;
+    right:5%;
+    bottom:-2%;
+    width:190px;
+    height:180px;
+    pointer-events:none;
+    transform:rotate(-8deg);
 }
 
-#cube::before {
-    content: "";
-    position: absolute;
-    left: -2px;
-    top: -17px;
-    width: 72px;
-    height: 16px;
-    background: #d1d1d1;
-    border: 2px solid #8c8c8c;
-    transform: skewY(-15deg);
-    transform-origin: bottom;
+#heldGun .barrel{
+    position:absolute;
+    width:95px;
+    height:23px;
+    right:8px;
+    top:35px;
+    background:linear-gradient(#bcbcbc,#686868);
+    border:2px solid #3b3b3b;
+    border-radius:3px;
 }
 
-#cube::after {
-    content: "";
-    position: absolute;
-    top: -9px;
-    right: -17px;
-    width: 16px;
-    height: 72px;
-    background: #777777;
-    border: 2px solid #666666;
-    transform: skewY(-35deg);
-    transform-origin: left;
+#heldGun .barrel:after{
+    content:"";
+    position:absolute;
+    right:-3px;
+    top:4px;
+    height:11px;
+    width:8px;
+    background:#252525;
 }
 
-/* Small aiming dot */
-
-#crosshair {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 5px;
-    height: 5px;
-    background: white;
-    border: 1px solid #333;
-    border-radius: 50%;
-    transform: translate(-50%, -50%);
-    pointer-events: none;
+#heldGun .slide{
+    position:absolute;
+    right:10px;
+    top:51px;
+    width:120px;
+    height:37px;
+    background:linear-gradient(130deg,#999,#494949);
+    border:3px solid #333;
+    border-radius:4px 4px 7px 7px;
 }
 
-/* Held dark gray rectangle */
-
-#heldObject {
-    display: none;
-    position: absolute;
-    width: 110px;
-    height: 82px;
-    right: 12%;
-    bottom: 7%;
-    background: #414141;
-    border: 3px solid #292929;
-    box-shadow: 9px 9px 0 #222222;
-    transform: perspective(250px) rotateY(-12deg) rotateX(5deg);
+#heldGun .slide:before{
+    content:"";
+    position:absolute;
+    left:10px;
+    top:5px;
+    width:70px;
+    height:3px;
+    background:#333;
 }
 
-#heldObject::before {
-    content: "";
-    position: absolute;
-    left: -3px;
-    top: -19px;
-    width: 110px;
-    height: 17px;
-    background: #575757;
-    border: 3px solid #292929;
-    transform: skewY(-8deg);
+#heldGun .grip{
+    position:absolute;
+    top:77px;
+    right:45px;
+    width:39px;
+    height:83px;
+    background:linear-gradient(90deg,#292929,#555,#303030);
+    border:3px solid #222;
+    border-radius:3px 3px 9px 9px;
+    transform:rotate(-15deg);
 }
 
-#heldObject::after {
-    content: "";
-    position: absolute;
-    top: -10px;
-    right: -20px;
-    width: 17px;
-    height: 82px;
-    background: #303030;
-    border: 3px solid #222222;
-    transform: skewY(-35deg);
+#heldGun .grip:after{
+    content:"";
+    position:absolute;
+    inset:10px 5px;
+    background:repeating-linear-gradient(0deg,transparent 0 8px,#222 9px 11px);
 }
 
-#gameBack {
-    position: absolute;
-    z-index: 10;
-    top: 15px;
-    left: 15px;
-    width: 110px;
-    min-height: 42px;
-    font-size: 15px;
-    background: #555555;
-    border-color: #333333;
-    box-shadow: 0 4px 0 #222222;
+#heldGun .trigger{
+    position:absolute;
+    right:77px;
+    top:83px;
+    width:24px;
+    height:25px;
+    border:4px solid #303030;
+    border-top:0;
+    border-radius:0 0 12px 12px;
 }
 
-#gameHint {
-    position: absolute;
-    z-index: 5;
-    bottom: 18px;
-    left: 50%;
-    transform: translateX(-50%);
-    font-family: Arial, sans-serif;
-    font-size: 13px;
-    color: white;
-    text-shadow: 1px 1px 3px black;
-    text-align: center;
-    width: 90%;
-    pointer-events: none;
-}
-
-@media (max-width: 600px) {
-    #cube {
-        width: 58px;
-        height: 58px;
-        top: 63%;
+@media(max-width:600px){
+    #movement{
+        top:12px;
+        right:12px;
+        width:126px;
+        height:126px;
+        gap:4px;
     }
 
-    #cube::before {
-        width: 58px;
+    .moveButton{font-size:22px}
+
+    #gameBack{
+        top:12px;
+        left:12px;
+        width:82px;
+        height:39px;
+        font-size:13px;
     }
 
-    #cube::after {
-        height: 58px;
+    #heldGun{
+        width:150px;
+        height:150px;
+        right:0;
+        bottom:0;
+        transform:scale(.85) rotate(-8deg);
+        transform-origin:bottom right;
     }
 
-    #heldObject {
-        width: 85px;
-        height: 65px;
-        right: 10%;
-        bottom: 9%;
-    }
-
-    #heldObject::before {
-        width: 85px;
-    }
-
-    #heldObject::after {
-        height: 65px;
-    }
+    #hint{font-size:12px;bottom:12px}
 }
 </style>
 </head>
 
 <body>
 
-<!-- MENU -->
 <div id="mainScreen">
     <div class="menu">
         <div class="logo">SUBWAY II</div>
-
         <div class="buttons">
-            <button id="playButton">PLAY</button>
-            <button class="backButton" id="menuBackButton">BACK</button>
+            <button class="menuButton" id="playButton">PLAY</button>
+            <button class="menuButton backButton" id="menuBackButton">BACK</button>
         </div>
     </div>
 </div>
 
-<!-- GAME -->
 <div id="gameScreen">
-    <div id="room">
-        <div id="ceiling"></div>
-        <div id="floor"></div>
-        <div id="backWall"></div>
-        <div id="leftWall"></div>
-        <div id="rightWall"></div>
+    <canvas id="gameCanvas"></canvas>
 
-        <div id="cube" aria-label="Pick up cube"></div>
+    <button id="gameBack">BACK</button>
 
-        <div id="crosshair"></div>
-        <div id="heldObject"></div>
-
-        <button id="gameBack">BACK</button>
-
-        <div id="gameHint">CLICK OR TAP THE CUBE TO PICK IT UP</div>
+    <div id="movement">
+        <button class="moveButton" id="forward" aria-label="Move forward">▲</button>
+        <button class="moveButton" id="left" aria-label="Move left">◀</button>
+        <button class="moveButton" id="backward" aria-label="Move backward">▼</button>
+        <button class="moveButton" id="right" aria-label="Move right">▶</button>
     </div>
+
+    <div id="heldGun">
+        <div class="barrel"></div>
+        <div class="slide"></div>
+        <div class="grip"></div>
+        <div class="trigger"></div>
+    </div>
+
+    <div id="hint">LOOK AROUND • FIND THE GUN • CLICK OR TAP TO PICK IT UP</div>
 </div>
 
-<script>
+<script type="module">
+import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js";
+
 const mainScreen = document.getElementById("mainScreen");
 const gameScreen = document.getElementById("gameScreen");
-const cube = document.getElementById("cube");
-const heldObject = document.getElementById("heldObject");
-const gameHint = document.getElementById("gameHint");
+const canvas = document.getElementById("gameCanvas");
+const heldGun = document.getElementById("heldGun");
+const hint = document.getElementById("hint");
 
-document.getElementById("playButton").addEventListener("click", function() {
-    mainScreen.style.display = "none";
-    gameScreen.style.display = "block";
-});
+let renderer, scene, camera, clock;
+let gunPickup, gunHeld;
+let playing = false;
+let hasGun = false;
+let yaw = 0;
+let pitch = 0;
+let playerX = 0;
+let playerZ = 3;
+let dragging = false;
+let lastX = 0;
+let lastY = 0;
+let pointerMoved = false;
+let initialized = false;
 
-document.getElementById("menuBackButton").addEventListener("click", function() {
-    window.location.href = "index.html";
-});
+const keys = {
+    forward:false,
+    backward:false,
+    left:false,
+    right:false
+};
 
-document.getElementById("gameBack").addEventListener("click", function(event) {
-    event.stopPropagation();
-    gameScreen.style.display = "none";
-    mainScreen.style.display = "flex";
-});
+const raycaster = new THREE.Raycaster();
+const pointer = new THREE.Vector2();
 
-/* Pick up the cube by clicking or tapping */
-function pickUpCube() {
-    heldObject.style.display = "block";
-    cube.style.display = "none";
-    gameHint.textContent = "CUBE PICKED UP";
+function makeMaterial(color, roughness=1) {
+    return new THREE.MeshStandardMaterial({
+        color,
+        roughness,
+        metalness:0
+    });
 }
 
-cube.addEventListener("click", function(event) {
-    event.stopPropagation();
-    pickUpCube();
+function addBox(parent, size, position, material) {
+    const mesh = new THREE.Mesh(
+        new THREE.BoxGeometry(size[0],size[1],size[2]),
+        material
+    );
+    mesh.position.set(position[0],position[1],position[2]);
+    parent.add(mesh);
+    return mesh;
+}
+
+function createGun(parent, held=false) {
+    const gun = new THREE.Group();
+
+    const metal = makeMaterial(0x737373);
+    const lightMetal = makeMaterial(0x999999);
+    const darkMetal = makeMaterial(0x292929);
+
+    // Pistol slide and body
+    addBox(gun,[0.20,0.17,0.64],[0,0.05,0],metal);
+    addBox(gun,[0.16,0.09,0.46],[0,0.15,-0.015],lightMetal);
+
+    // Barrel
+    addBox(gun,[0.105,0.105,0.36],[0,0.12,-0.47],darkMetal);
+    addBox(gun,[0.07,0.07,0.045],[0,0.12,-0.66],makeMaterial(0x111111));
+
+    // Grip
+    const grip = addBox(
+        gun,
+        [0.17,0.34,0.20],
+        [0,-0.19,0.16],
+        darkMetal
+    );
+    grip.rotation.x = -0.20;
+
+    // Grip grooves
+    for(let i=0;i<4;i++){
+        const line = addBox(
+            gun,
+            [0.176,0.018,0.205],
+            [0,-0.11-i*0.065,0.16],
+            makeMaterial(0x505050)
+        );
+        line.rotation.x=-0.20;
+    }
+
+    // Trigger guard
+    const guard = new THREE.Mesh(
+        new THREE.TorusGeometry(0.075,0.012,6,12,Math.PI),
+        darkMetal
+    );
+    guard.rotation.x=Math.PI/2;
+    guard.position.set(0,-0.08,0.12);
+    gun.add(guard);
+
+    if(held){
+        gun.scale.set(0.8,0.8,0.8);
+        gun.position.set(0.34,-0.29,-0.65);
+        gun.rotation.set(0.08,-0.12,0.02);
+    }
+
+    parent.add(gun);
+    return gun;
+}
+
+function buildWorld() {
+    scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x858585);
+    scene.fog = new THREE.Fog(0x858585,18,38);
+
+    camera = new THREE.PerspectiveCamera(
+        75,
+        window.innerWidth/window.innerHeight,
+        0.1,
+        100
+    );
+
+    camera.position.set(playerX,1.7,playerZ);
+    camera.rotation.order="YXZ";
+
+    renderer = new THREE.WebGLRenderer({
+        canvas,
+        antialias:true
+    });
+
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
+    renderer.setSize(window.innerWidth,window.innerHeight);
+    renderer.outputColorSpace=THREE.SRGBColorSpace;
+    renderer.toneMapping=THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure=1.15;
+
+    clock = new THREE.Clock();
+
+    scene.add(new THREE.HemisphereLight(0xffffff,0x555555,2));
+
+    const light = new THREE.DirectionalLight(0xffffff,2);
+    light.position.set(-4,9,5);
+    scene.add(light);
+
+    // Gray room
+    const floorMat=makeMaterial(0x696969);
+    const wallMat=makeMaterial(0x929292);
+    const sideMat=makeMaterial(0x777777);
+    const ceilingMat=makeMaterial(0xa1a1a1);
+
+    addBox(scene,[12,0.2,12],[0,-0.1,0],floorMat);
+    addBox(scene,[12,0.2,12],[0,4.2,0],ceilingMat);
+
+    addBox(scene,[12,4,0.2],[0,2,-6],wallMat);
+    addBox(scene,[12,4,0.2],[0,2,6],wallMat);
+    addBox(scene,[0.2,4,12],[-6,2,0],sideMat);
+    addBox(scene,[0.2,4,12],[6,2,0],sideMat);
+
+    // A few subtle floor lines
+    const lineMat=makeMaterial(0x626262);
+    for(let i=-5;i<=5;i++){
+        addBox(scene,[0.015,0.008,12],[i,-0.001,0],lineMat);
+        addBox(scene,[12,0.008,0.015],[0,-0.001,i],lineMat);
+    }
+
+    // Gun lying in front of the player
+    gunPickup = new THREE.Group();
+    gunPickup.position.set(0,0.18,-1.4);
+    gunPickup.rotation.y=0.25;
+    createGun(gunPickup,false);
+    scene.add(gunPickup);
+
+    // Gun attached to camera, hidden until collected
+    gunHeld = createGun(camera,true);
+    gunHeld.visible=false;
+
+    camera.add(scene.remove ? new THREE.Object3D() : new THREE.Object3D());
+    // Camera is rendered using the same scene.
+    scene.add(camera);
+}
+
+function updateCamera() {
+    camera.rotation.order="YXZ";
+    camera.rotation.y=yaw;
+    camera.rotation.x=pitch;
+    camera.position.set(playerX,1.7,playerZ);
+}
+
+function startGame() {
+    mainScreen.style.display="none";
+    gameScreen.style.display="block";
+
+    if(!initialized){
+        buildWorld();
+        initialized=true;
+    }
+
+    playerX=0;
+    playerZ=3;
+    yaw=0;
+    pitch=0;
+    hasGun=false;
+
+    gunPickup.visible=true;
+    gunHeld.visible=false;
+    heldGun.style.display="none";
+
+    hint.textContent="LOOK AROUND • FIND THE GUN • CLICK OR TAP TO PICK IT UP";
+
+    updateCamera();
+    playing=true;
+    clock.start();
+    renderer.setSize(window.innerWidth,window.innerHeight);
+    animate();
+}
+
+function backToMenu() {
+    playing=false;
+    dragging=false;
+
+    Object.keys(keys).forEach(k=>keys[k]=false);
+
+    gameScreen.style.display="none";
+    mainScreen.style.display="flex";
+}
+
+function pickUpGun() {
+    if(hasGun || !gunPickup) return;
+
+    hasGun=true;
+    gunPickup.visible=false;
+    gunHeld.visible=true;
+    heldGun.style.display="block";
+    hint.textContent="GUN PICKED UP";
+}
+
+function tryPickUp(clientX,clientY) {
+    if(!playing || hasGun) return;
+
+    const rect=canvas.getBoundingClientRect();
+
+    pointer.x=((clientX-rect.left)/rect.width)*2-1;
+    pointer.y=-((clientY-rect.top)/rect.height)*2+1;
+
+    raycaster.setFromCamera(pointer,camera);
+
+    const hits=raycaster.intersectObject(gunPickup,true);
+
+    if(hits.length>0) {
+        pickUpGun();
+    }
+}
+
+function animate() {
+    if(!playing) return;
+
+    requestAnimationFrame(animate);
+
+    const dt=Math.min(clock.getDelta(),0.05);
+
+    const forward=Number(keys.forward)-Number(keys.backward);
+    const sideways=Number(keys.right)-Number(keys.left);
+
+    if(forward!==0 || sideways!==0){
+        const speed=3.5*dt;
+
+        // Move relative to the direction the camera faces.
+        playerX += (
+            Math.sin(yaw)*forward +
+            Math.cos(yaw)*sideways
+        )*speed;
+
+        playerZ += (
+            -Math.cos(yaw)*forward +
+            Math.sin(yaw)*sideways
+        )*speed;
+
+        // Keep the player inside the room.
+        playerX=THREE.MathUtils.clamp(playerX,-5.3,5.3);
+        playerZ=THREE.MathUtils.clamp(playerZ,-5.3,5.3);
+    }
+
+    updateCamera();
+
+    if(gunPickup && gunPickup.visible){
+        gunPickup.rotation.y+=dt*0.45;
+        gunPickup.position.y=0.2+Math.sin(performance.now()*0.002)*0.035;
+    }
+
+    renderer.render(scene,camera);
+}
+
+document.getElementById("playButton").addEventListener("click",startGame);
+
+document.getElementById("menuBackButton").addEventListener("click",()=>{
+    window.location.href="index.html";
 });
 
-cube.addEventListener("touchend", function(event) {
-    event.preventDefault();
-    pickUpCube();
-}, { passive: false });
+document.getElementById("gameBack").addEventListener("click",backToMenu);
+
+/* Arrow buttons: hold to keep moving */
+const movementButtons={
+    forward:document.getElementById("forward"),
+    backward:document.getElementById("backward"),
+    left:document.getElementById("left"),
+    right:document.getElementById("right")
+};
+
+for(const [direction,button] of Object.entries(movementButtons)){
+    button.addEventListener("pointerdown",event=>{
+        event.preventDefault();
+        event.stopPropagation();
+        keys[direction]=true;
+        button.classList.add("active");
+        try{button.setPointerCapture(event.pointerId)}catch(e){}
+    });
+
+    function release(){
+        keys[direction]=false;
+        button.classList.remove("active");
+    }
+
+    button.addEventListener("pointerup",release);
+    button.addEventListener("pointercancel",release);
+    button.addEventListener("lostpointercapture",release);
+    button.addEventListener("contextmenu",e=>e.preventDefault());
+}
+
+/* Keyboard controls also work */
+window.addEventListener("keydown",event=>{
+    if(!playing) return;
+
+    const map={
+        ArrowUp:"forward",
+        KeyW:"forward",
+        ArrowDown:"backward",
+        KeyS:"backward",
+        ArrowLeft:"left",
+        KeyA:"left",
+        ArrowRight:"right",
+        KeyD:"right"
+    };
+
+    const direction=map[event.code];
+
+    if(direction){
+        keys[direction]=true;
+        event.preventDefault();
+    }
+});
+
+window.addEventListener("keyup",event=>{
+    const map={
+        ArrowUp:"forward",
+        KeyW:"forward",
+        ArrowDown:"backward",
+        KeyS:"backward",
+        ArrowLeft:"left",
+        KeyA:"left",
+        ArrowRight:"right",
+        KeyD:"right"
+    };
+
+    const direction=map[event.code];
+    if(direction) keys[direction]=false;
+});
+
+window.addEventListener("blur",()=>{
+    Object.keys(keys).forEach(k=>keys[k]=false);
+});
+
+/* Mouse: hold left button and drag to look around.
+   Touch: drag on the game screen to look around. */
+gameScreen.addEventListener("pointerdown",event=>{
+    if(!playing) return;
+    if(event.target.closest("button")) return;
+
+    if(event.pointerType==="mouse" && event.button!==0) return;
+
+    dragging=true;
+    pointerMoved=false;
+    lastX=event.clientX;
+    lastY=event.clientY;
+
+    try{gameScreen.setPointerCapture(event.pointerId)}catch(e){}
+});
+
+gameScreen.addEventListener("pointermove",event=>{
+    if(!dragging || !playing) return;
+
+    const dx=event.clientX-lastX;
+    const dy=event.clientY-lastY;
+
+    if(Math.abs(dx)+Math.abs(dy)>2) pointerMoved=true;
+
+    yaw-=dx*0.004;
+    pitch-=dy*0.003;
+
+    pitch=THREE.MathUtils.clamp(pitch,-1.15,1.15);
+
+    lastX=event.clientX;
+    lastY=event.clientY;
+});
+
+function stopDragging(){
+    dragging=false;
+}
+
+gameScreen.addEventListener("pointerup",event=>{
+    if(!dragging) return;
+
+    const wasMoved=pointerMoved;
+    stopDragging();
+
+    if(!wasMoved && !event.target.closest("button")){
+        tryPickUp(event.clientX,event.clientY);
+    }
+});
+
+gameScreen.addEventListener("pointercancel",stopDragging);
+gameScreen.addEventListener("contextmenu",event=>event.preventDefault());
+
+window.addEventListener("resize",()=>{
+    if(!renderer || !camera) return;
+
+    camera.aspect=window.innerWidth/window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth,window.innerHeight);
+});
 </script>
 
 </body>
