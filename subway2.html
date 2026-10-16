@@ -7,584 +7,854 @@
 <title>SUBWAY II</title>
 
 <style>
-*{box-sizing:border-box}
-html,body{margin:0;width:100%;height:100%;overflow:hidden;font-family:"Arial Black",Impact,sans-serif}
-body{background:linear-gradient(135deg,#70e69a,#46a875 35%,#7856b8 75%,#b39be9);color:white;user-select:none;-webkit-user-select:none}
-button{font-family:inherit;cursor:pointer;touch-action:none;-webkit-tap-highlight-color:transparent}
-
-/* MAIN MENU */
-#mainScreen{
- position:fixed;inset:0;display:flex;align-items:center;justify-content:center;
- background:linear-gradient(135deg,#70e69a,#46a875 35%,#7856b8 75%,#b39be9);z-index:10
-}
-#mainScreen:before{
- content:"";position:absolute;inset:0;
- background-image:linear-gradient(#ffffff16 2px,transparent 2px),linear-gradient(90deg,#ffffff16 2px,transparent 2px);
- background-size:48px 48px;pointer-events:none
-}
-.menu{position:relative;width:min(440px,90%);text-align:center}
-.logo{font-size:clamp(43px,10vw,68px);font-weight:1000;letter-spacing:-2px;transform:rotate(-5deg);text-shadow:4px 4px 0 #555078,7px 7px 0 #38314f;margin-bottom:45px}
-.buttons{width:min(290px,100%);margin:auto;display:flex;flex-direction:column;gap:16px}
-.menuButton{min-height:55px;border:3px solid #514582;background:#6e64b9;color:white;font-size:21px;font-weight:900;letter-spacing:2px;box-shadow:0 6px 0 #42375f}
-.menuButton:active{transform:translateY(3px)}
-.backButton{background:#559b83;border-color:#34735e;box-shadow:0 6px 0 #285644}
-
-/* GAME */
-#gameScreen{display:none;position:fixed;inset:0;overflow:hidden;background:#858585;touch-action:none}
-#gameCanvas{position:absolute;inset:0;width:100%;height:100%;display:block;outline:none;touch-action:none}
-
-#gameBack{
- position:absolute;z-index:10;top:15px;left:15px;width:100px;height:43px;
- border:3px solid #333;background:#555;color:white;font-size:15px;box-shadow:0 4px 0 #222;touch-action:manipulation
+* {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
 }
 
-/* MOVEMENT ARROWS */
-#movement{
- position:absolute;z-index:10;top:18px;right:18px;width:150px;height:150px;
- display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,1fr);
- gap:5px;touch-action:none
-}
-.moveButton{
- display:flex;align-items:center;justify-content:center;
- border:2px solid #dedede;border-radius:7px;background:#292929d9;color:white;
- font-family:Arial,sans-serif;font-size:25px;font-weight:bold;padding:0;
- box-shadow:0 3px 0 #111;touch-action:none
-}
-.moveButton.active{background:#777;border-color:white;transform:translateY(2px);box-shadow:0 1px 0 #111}
-#forward{grid-area:1/2}
-#left{grid-area:2/1}
-#backward{grid-area:2/2}
-#right{grid-area:2/3}
-
-/* SHOOT BESIDE THE ARROWS */
-#shootButton{
- display:none;
- position:absolute;
- z-index:12;
- top:18px;
- right:178px;
- width:150px;
- height:150px;
- border:4px solid #f3e5a0;
- border-radius:12px;
- background:#e8c900;
- color:#242000;
- font-size:25px;
- font-weight:1000;
- letter-spacing:1px;
- box-shadow:0 6px 0 #9c8700;
- align-items:center;
- justify-content:center;
- touch-action:manipulation
-}
-#shootButton:active{
- transform:translateY(4px);
- box-shadow:0 2px 0 #9c8700;
- background:#ffe83d
+html, body {
+  margin: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  font-family: Arial, sans-serif;
+  background: #171717;
+  color: white;
+  touch-action: none;
 }
 
-/* INSTRUCTIONS */
-#hint{
- position:absolute;z-index:5;bottom:15px;left:50%;transform:translateX(-50%);
- width:90%;text-align:center;color:white;font:bold 13px Arial,sans-serif;
- text-shadow:1px 2px 3px black;pointer-events:none
+button {
+  font-family: Arial, sans-serif;
+  font-weight: bold;
+  cursor: pointer;
+  touch-action: none;
+  user-select: none;
 }
 
-@media(max-width:600px){
- #movement{top:12px;right:12px;width:132px;height:132px;gap:4px}
- .moveButton{font-size:22px}
- #shootButton{top:12px;right:152px;width:132px;height:132px;font-size:19px}
- #gameBack{top:12px;left:12px;width:82px;height:39px;font-size:13px}
- #hint{font-size:11px;bottom:10px}
+#menu {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 20px;
+  background-color: #242424;
+  background-image:
+    linear-gradient(rgba(0,0,0,.18) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,0,0,.18) 1px, transparent 1px),
+    linear-gradient(135deg, #236d48, #492c70);
+  background-size: 24px 24px, 24px 24px, 100% 100%;
+  z-index: 10;
+}
+
+#logo {
+  font-size: clamp(44px, 10vw, 90px);
+  font-weight: 1000;
+  letter-spacing: 5px;
+  color: white;
+  text-shadow: 5px 5px 0 #161616;
+  margin-bottom: 20px;
+}
+
+.menuButton {
+  width: 220px;
+  max-width: 75vw;
+  padding: 17px;
+  color: white;
+  background: #292929;
+  border: 3px solid white;
+  box-shadow: 5px 5px 0 #111;
+  font-size: 20px;
+}
+
+.menuButton:active {
+  transform: translate(3px, 3px);
+  box-shadow: 2px 2px 0 #111;
+}
+
+#backButton {
+  position: absolute;
+  left: 12px;
+  top: 12px;
+  width: auto;
+  padding: 11px 16px;
+  background: #222;
+  color: white;
+  border: 2px solid white;
+  z-index: 20;
+}
+
+#game {
+  position: fixed;
+  inset: 0;
+  display: none;
+  background: #777;
+  overflow: hidden;
+}
+
+#game canvas {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  touch-action: none;
+  z-index: 1;
+}
+
+#hint {
+  position: absolute;
+  left: 50%;
+  bottom: 22px;
+  transform: translateX(-50%);
+  padding: 10px 14px;
+  max-width: 85vw;
+  background: rgba(0,0,0,.65);
+  color: white;
+  font-size: 14px;
+  text-align: center;
+  pointer-events: none;
+  z-index: 4;
+}
+
+#movement {
+  position: absolute;
+  right: 18px;
+  top: 18px;
+  width: 150px;
+  height: 150px;
+  display: none;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  gap: 4px;
+  z-index: 5;
+}
+
+.moveButton {
+  background: rgba(20,20,20,.78);
+  color: white;
+  border: 2px solid rgba(255,255,255,.8);
+  border-radius: 8px;
+  font-size: 23px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.moveButton:active {
+  background: rgba(100,100,100,.95);
+}
+
+#up { grid-column: 2; grid-row: 1; }
+#left { grid-column: 1; grid-row: 2; }
+#down { grid-column: 2; grid-row: 2; }
+#right { grid-column: 3; grid-row: 2; }
+
+#shootButton {
+  position: absolute;
+  top: 18px;
+  right: 178px;
+  width: 150px;
+  height: 150px;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  background: rgba(150, 35, 25, .9);
+  border: 3px solid white;
+  border-radius: 8px;
+  color: white;
+  font-size: 21px;
+  z-index: 6;
+}
+
+#shootButton:active {
+  background: #f03c25;
+  transform: scale(.96);
+}
+
+@media (max-width: 600px) {
+  #movement {
+    width: 132px;
+    height: 132px;
+    right: 12px;
+    top: 12px;
+  }
+
+  #shootButton {
+    width: 132px;
+    height: 132px;
+    right: 152px;
+    top: 12px;
+    font-size: 17px;
+  }
+
+  #hint {
+    bottom: 12px;
+    font-size: 12px;
+  }
 }
 </style>
 </head>
 
 <body>
 
-<div id="mainScreen">
- <div class="menu">
-  <div class="logo">SUBWAY II</div>
-  <div class="buttons">
-   <button class="menuButton" id="playButton">PLAY</button>
-   <button class="menuButton backButton" id="menuBackButton">BACK</button>
+<div id="menu">
+  <div id="logo">SUBWAY II</div>
+  <button class="menuButton" id="playButton">PLAY</button>
+  <button class="menuButton" id="menuBackButton">BACK</button>
+</div>
+
+<div id="game">
+  <button id="backButton">BACK</button>
+
+  <div id="movement">
+    <button class="moveButton" id="up" data-move="forward">▲</button>
+    <button class="moveButton" id="left" data-move="left">◀</button>
+    <button class="moveButton" id="down" data-move="backward">▼</button>
+    <button class="moveButton" id="right" data-move="right">▶</button>
   </div>
- </div>
+
+  <button id="shootButton">SHOOT</button>
+  <div id="hint">Find the gun and click it to pick it up.</div>
 </div>
 
-<div id="gameScreen">
- <canvas id="gameCanvas"></canvas>
-
- <button id="gameBack">BACK</button>
-
- <div id="movement">
-  <button class="moveButton" id="forward" aria-label="Move forward">▲</button>
-  <button class="moveButton" id="left" aria-label="Move left">◀</button>
-  <button class="moveButton" id="backward" aria-label="Move backward">▼</button>
-  <button class="moveButton" id="right" aria-label="Move right">▶</button>
- </div>
-
- <button id="shootButton">SHOOT</button>
-
- <div id="hint">DRAG TO LOOK • USE ARROWS TO MOVE • TAP GUN TO PICK UP</div>
-</div>
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js"
+  }
+}
+</script>
 
 <script type="module">
-import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js";
+import * as THREE from "three";
 
-const mainScreen=document.getElementById("mainScreen");
-const gameScreen=document.getElementById("gameScreen");
-const canvas=document.getElementById("gameCanvas");
-const movement=document.getElementById("movement");
-const shootButton=document.getElementById("shootButton");
-const hint=document.getElementById("hint");
+const menu = document.getElementById("menu");
+const game = document.getElementById("game");
+const playButton = document.getElementById("playButton");
+const menuBackButton = document.getElementById("menuBackButton");
+const backButton = document.getElementById("backButton");
+const movement = document.getElementById("movement");
+const shootButton = document.getElementById("shootButton");
+const hint = document.getElementById("hint");
 
-let renderer,scene,camera,gunPickup;
-let playing=false,initialized=false,hasGun=false;
-let playerX=0,playerZ=3,yaw=0,pitch=0;
-let dragging=false,dragPointerId=null;
-let dragStartX=0,dragStartY=0,lastX=0,lastY=0,pointerMoved=false;
-let animationId=null,previousTime=0;
+let renderer, scene, camera;
+let gunPickup = null;
+let heldGun = null;
+let hasGun = false;
+let running = false;
 
-const keys={forward:false,backward:false,left:false,right:false};
-const projectiles=[];
-const raycaster=new THREE.Raycaster();
-const pointer=new THREE.Vector2();
-const direction=new THREE.Vector3();
+const clock = new THREE.Clock();
+const raycaster = new THREE.Raycaster();
+const pointer = new THREE.Vector2();
+const wallMeshes = [];
+const projectiles = [];
 
-function mat(color,roughness=1,metalness=0){
- return new THREE.MeshStandardMaterial({color,roughness,metalness});
-}
-
-function box(parent,size,position,material){
- const mesh=new THREE.Mesh(new THREE.BoxGeometry(...size),material);
- mesh.position.set(...position);
- parent.add(mesh);
- return mesh;
-}
-
-/* GUN ON THE FLOOR */
-function createGun(parent){
- const gun=new THREE.Group();
- const metal=mat(0x777777,.55,.35);
- const lightMetal=mat(0x999999,.5,.35);
- const darkMetal=mat(0x292929,.8,.1);
-
- box(gun,[.20,.17,.64],[0,.05,0],metal);
- box(gun,[.16,.09,.46],[0,.15,-.015],lightMetal);
- box(gun,[.105,.105,.36],[0,.12,-.47],darkMetal);
- box(gun,[.07,.07,.045],[0,.12,-.66],mat(0x111111));
-
- const grip=box(gun,[.17,.34,.20],[0,-.19,.16],darkMetal);
- grip.rotation.x=-.20;
-
- for(let i=0;i<4;i++){
-  const line=box(gun,[.176,.018,.205],[0,-.11-i*.065,.16],mat(0x505050));
-  line.rotation.x=-.20;
- }
-
- const guard=new THREE.Mesh(new THREE.TorusGeometry(.075,.012,6,12,Math.PI),darkMetal);
- guard.rotation.x=Math.PI/2;
- guard.position.set(0,-.08,.12);
- gun.add(guard);
-
- parent.add(gun);
- return gun;
-}
-
-/* BUILD ROOM */
-function buildWorld(){
- scene=new THREE.Scene();
- scene.background=new THREE.Color(0x858585);
- scene.fog=new THREE.Fog(0x858585,22,45);
-
- camera=new THREE.PerspectiveCamera(75,innerWidth/innerHeight,.1,100);
- camera.rotation.order="YXZ";
-
- renderer=new THREE.WebGLRenderer({canvas,antialias:true});
- renderer.setPixelRatio(Math.min(devicePixelRatio,2));
- renderer.setSize(innerWidth,innerHeight);
- renderer.outputColorSpace=THREE.SRGBColorSpace;
- renderer.toneMapping=THREE.ACESFilmicToneMapping;
- renderer.toneMappingExposure=1.15;
-
- scene.add(new THREE.HemisphereLight(0xffffff,0x555555,2));
-
- const light=new THREE.DirectionalLight(0xffffff,2);
- light.position.set(-4,9,5);
- scene.add(light);
-
- const floorMat=mat(0x696969);
- const wallMat=mat(0x929292);
- const sideMat=mat(0x777777);
- const ceilingMat=mat(0xa1a1a1);
-
- box(scene,[12,.2,12],[0,-.1,0],floorMat);
- box(scene,[12,.2,12],[0,4.2,0],ceilingMat);
-
- box(scene,[12,4,.2],[0,2,-6],wallMat);
- box(scene,[12,4,.2],[0,2,6],wallMat);
- box(scene,[.2,4,12],[-6,2,0],sideMat);
- box(scene,[.2,4,12],[6,2,0],sideMat);
-
- const lineMat=mat(0x626262);
- for(let i=-5;i<=5;i++){
-  box(scene,[.015,.008,12],[i,.006,0],lineMat);
-  box(scene,[12,.008,.015],[0,.006,i],lineMat);
- }
-
- gunPickup=new THREE.Group();
- gunPickup.position.set(0,.18,.7);
- gunPickup.rotation.y=.25;
- createGun(gunPickup);
- scene.add(gunPickup);
- scene.add(camera);
-}
-
-/* CAMERA */
-function updateCamera(){
- camera.rotation.order="YXZ";
- camera.rotation.y=yaw;
- camera.rotation.x=pitch;
- camera.position.set(playerX,1.7,playerZ);
-}
-
-/* PICK UP GUN */
-function pickUpGun(){
- if(hasGun)return;
-
- hasGun=true;
-
- // Remove the gun from the floor.
- scene.remove(gunPickup);
-
- // Keep the movement arrows and show SHOOT beside them.
- movement.style.display="grid";
- shootButton.style.display="flex";
-
- hint.textContent="PRESS SHOOT TO FIRE A FAST YELLOW PROJECTILE";
-}
-
-/* SHOOT A YELLOW RECTANGLE */
-function shoot(){
- if(!playing||!hasGun)return;
-
- camera.getWorldDirection(direction).normalize();
-
- const start=camera.position.clone().add(direction.clone().multiplyScalar(.8));
-
- const projectileMaterial=new THREE.MeshBasicMaterial({color:0xffe500});
- const projectileMesh=new THREE.Mesh(
-  new THREE.BoxGeometry(.18,.18,.48),
-  projectileMaterial
- );
-
- projectileMesh.position.copy(start);
- projectileMesh.quaternion.setFromUnitVectors(
-  new THREE.Vector3(0,0,1),
-  direction
- );
-
- scene.add(projectileMesh);
-
- projectiles.push({
-  mesh:projectileMesh,
-  direction:direction.clone(),
-  speed:38,
-  stopped:false,
-  age:0
- });
-}
-
-shootButton.addEventListener("pointerdown",event=>{
- event.preventDefault();
- event.stopPropagation();
- shoot();
-});
-
-/* CLEAR INPUT */
-function clearControls(){
- for(const key in keys)keys[key]=false;
-
- document.querySelectorAll(".moveButton").forEach(button=>{
-  button.classList.remove("active");
- });
-
- dragging=false;
- dragPointerId=null;
-}
-
-/* START GAME */
-function startGame(){
- mainScreen.style.display="none";
- gameScreen.style.display="block";
-
- if(!initialized){
-  buildWorld();
-  initialized=true;
- }
-
- playerX=0;
- playerZ=3;
- yaw=0;
- pitch=0;
- hasGun=false;
-
- for(const p of projectiles){
-  scene.remove(p.mesh);
- }
- projectiles.length=0;
-
- if(gunPickup)scene.remove(gunPickup);
-
- gunPickup=new THREE.Group();
- gunPickup.position.set(0,.18,.7);
- gunPickup.rotation.y=.25;
- createGun(gunPickup);
- scene.add(gunPickup);
-
- movement.style.display="grid";
- shootButton.style.display="none";
- hint.textContent="DRAG TO LOOK • USE ARROWS TO MOVE • TAP GUN TO PICK UP";
-
- clearControls();
- updateCamera();
-
- playing=true;
- previousTime=performance.now();
-
- if(animationId!==null)cancelAnimationFrame(animationId);
- animate(previousTime);
-
- renderer.setSize(innerWidth,innerHeight);
-}
-
-function backToMenu(){
- playing=false;
-
- if(animationId!==null){
-  cancelAnimationFrame(animationId);
-  animationId=null;
- }
-
- clearControls();
- gameScreen.style.display="none";
- mainScreen.style.display="flex";
-}
-
-document.getElementById("playButton").addEventListener("click",startGame);
-document.getElementById("menuBackButton").addEventListener("click",()=>{
- location.href="index.html";
-});
-document.getElementById("gameBack").addEventListener("click",backToMenu);
-
-/* MOVEMENT BUTTONS */
-const movementButtons={
- forward:document.getElementById("forward"),
- backward:document.getElementById("backward"),
- left:document.getElementById("left"),
- right:document.getElementById("right")
+const keys = {
+  forward: false,
+  backward: false,
+  left: false,
+  right: false
 };
 
-for(const [directionName,button] of Object.entries(movementButtons)){
- button.addEventListener("pointerdown",event=>{
-  event.preventDefault();
-  event.stopPropagation();
+let yaw = 0;
+let pitch = 0;
+let dragging = false;
+let activePointerId = null;
+let lastPointerX = 0;
+let lastPointerY = 0;
+let pointerMoved = false;
 
-  keys[directionName]=true;
-  button.classList.add("active");
+const ROOM_SIZE = 12;
+const HALF_ROOM = ROOM_SIZE / 2;
+const PLAYER_HEIGHT = 1.7;
+const PLAYER_RADIUS = 0.28;
 
-  try{button.setPointerCapture(event.pointerId)}catch(error){}
- });
+playButton.addEventListener("click", startGame);
 
- const release=()=>{
-  keys[directionName]=false;
-  button.classList.remove("active");
- };
-
- button.addEventListener("pointerup",release);
- button.addEventListener("pointercancel",release);
- button.addEventListener("lostpointercapture",release);
- button.addEventListener("contextmenu",event=>event.preventDefault());
-}
-
-/* KEYBOARD */
-const keyboardMap={
- ArrowUp:"forward",KeyW:"forward",
- ArrowDown:"backward",KeyS:"backward",
- ArrowLeft:"left",KeyA:"left",
- ArrowRight:"right",KeyD:"right"
-};
-
-window.addEventListener("keydown",event=>{
- if(!playing)return;
-
- const key=keyboardMap[event.code];
- if(key){
-  keys[key]=true;
-  event.preventDefault();
- }
+menuBackButton.addEventListener("click", () => {
+  window.location.href = "index.html";
 });
 
-window.addEventListener("keyup",event=>{
- const key=keyboardMap[event.code];
- if(key){
-  keys[key]=false;
-  event.preventDefault();
- }
-});
+backButton.addEventListener("click", returnToMenu);
 
-window.addEventListener("blur",clearControls);
+function startGame() {
+  menu.style.display = "none";
+  game.style.display = "block";
 
-/* CAMERA LOOK */
-canvas.addEventListener("pointerdown",event=>{
- if(!playing)return;
- if(event.pointerType==="mouse"&&event.button!==0)return;
-
- dragging=true;
- dragPointerId=event.pointerId;
-
- dragStartX=lastX=event.clientX;
- dragStartY=lastY=event.clientY;
- pointerMoved=false;
-
- try{canvas.setPointerCapture(event.pointerId)}catch(error){}
- event.preventDefault();
-});
-
-canvas.addEventListener("pointermove",event=>{
- if(!playing||!dragging||event.pointerId!==dragPointerId)return;
-
- const dx=event.clientX-lastX;
- const dy=event.clientY-lastY;
-
- if(Math.abs(event.clientX-dragStartX)>3||
-    Math.abs(event.clientY-dragStartY)>3){
-  pointerMoved=true;
- }
-
- yaw-=dx*.004;
- pitch-=dy*.003;
- pitch=THREE.MathUtils.clamp(pitch,-1.35,1.35);
-
- lastX=event.clientX;
- lastY=event.clientY;
-
- event.preventDefault();
-});
-
-function attemptPickup(clientX,clientY){
- if(!playing||hasGun||!gunPickup)return;
-
- const rect=canvas.getBoundingClientRect();
- pointer.x=((clientX-rect.left)/rect.width)*2-1;
- pointer.y=-((clientY-rect.top)/rect.height)*2+1;
-
- raycaster.setFromCamera(pointer,camera);
-
- if(raycaster.intersectObject(gunPickup,true).length>0){
-  pickUpGun();
- }
-}
-
-canvas.addEventListener("pointerup",event=>{
- if(!dragging||event.pointerId!==dragPointerId)return;
-
- const moved=pointerMoved;
- const x=event.clientX;
- const y=event.clientY;
-
- dragging=false;
- dragPointerId=null;
-
- if(!moved)attemptPickup(x,y);
-
- event.preventDefault();
-});
-
-canvas.addEventListener("pointercancel",event=>{
- if(event.pointerId===dragPointerId){
-  dragging=false;
-  dragPointerId=null;
- }
-});
-
-canvas.addEventListener("contextmenu",event=>event.preventDefault());
-
-/* PROJECTILES */
-function updateProjectiles(dt){
- for(const p of projectiles){
-  if(p.stopped)continue;
-
-  p.mesh.position.addScaledVector(p.direction,p.speed*dt);
-  p.age+=dt;
-
-  const pos=p.mesh.position;
-
-  // Stop at the room boundaries.
-  const hitWall=
-   pos.x<=-5.82||pos.x>=5.82||
-   pos.z<=-5.82||pos.z>=5.82||
-   pos.y<=.12||pos.y>=4.05;
-
-  if(hitWall){
-   pos.x=THREE.MathUtils.clamp(pos.x,-5.82,5.82);
-   pos.y=THREE.MathUtils.clamp(pos.y,.12,4.05);
-   pos.z=THREE.MathUtils.clamp(pos.z,-5.82,5.82);
-   p.stopped=true;
+  if (!renderer) {
+    createWorld();
   }
 
-  // Clean up old projectiles.
-  if(p.age>12){
-   scene.remove(p.mesh);
-   p.stopped=true;
+  running = true;
+  hasGun = false;
+  heldGun = null;
+
+  if (heldGun) camera.remove(heldGun);
+
+  movement.style.display = "grid";
+  shootButton.style.display = "none";
+  hint.textContent = "Find the gun and click it to pick it up.";
+
+  resetControls();
+  camera.position.set(0, PLAYER_HEIGHT, 3);
+  yaw = 0;
+  pitch = 0;
+  updateCamera();
+
+  clock.getDelta();
+}
+
+function returnToMenu() {
+  running = false;
+  resetControls();
+  game.style.display = "none";
+  menu.style.display = "flex";
+}
+
+function createWorld() {
+  scene = new THREE.Scene();
+  scene.background = new THREE.Color(0x777777);
+
+  camera = new THREE.PerspectiveCamera(
+    75,
+    window.innerWidth / window.innerHeight,
+    0.05,
+    100
+  );
+
+  camera.rotation.order = "YXZ";
+  camera.position.set(0, PLAYER_HEIGHT, 3);
+  scene.add(camera);
+
+  renderer = new THREE.WebGLRenderer({
+    antialias: true,
+    alpha: false
+  });
+
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.outputColorSpace = THREE.SRGBColorSpace;
+  game.prepend(renderer.domElement);
+
+  const ambient = new THREE.HemisphereLight(0xffffff, 0x454545, 2.1);
+  scene.add(ambient);
+
+  const light = new THREE.DirectionalLight(0xffffff, 1.4);
+  light.position.set(3, 8, 4);
+  scene.add(light);
+
+  createRoom();
+  createPickupGun();
+
+  window.addEventListener("resize", resizeRenderer);
+  setupLookControls();
+  setupMovementControls();
+  setupKeyboard();
+
+  renderer.setAnimationLoop(animate);
+}
+
+function createRoom() {
+  const floorMaterial = new THREE.MeshStandardMaterial({
+    color: 0x858585,
+    roughness: 0.95
+  });
+
+  const wallMaterial = new THREE.MeshStandardMaterial({
+    color: 0x999999,
+    roughness: 0.95
+  });
+
+  const ceilingMaterial = new THREE.MeshStandardMaterial({
+    color: 0x707070,
+    roughness: 1
+  });
+
+  const floor = new THREE.Mesh(
+    new THREE.BoxGeometry(ROOM_SIZE, 0.2, ROOM_SIZE),
+    floorMaterial
+  );
+  floor.position.set(0, -0.1, 0);
+  scene.add(floor);
+
+  const ceiling = new THREE.Mesh(
+    new THREE.BoxGeometry(ROOM_SIZE, 0.2, ROOM_SIZE),
+    ceilingMaterial
+  );
+  ceiling.position.set(0, 4.2, 0);
+  scene.add(ceiling);
+
+  const wallData = [
+    { size: [ROOM_SIZE, 4.2, 0.2], pos: [0, 2, -HALF_ROOM] },
+    { size: [ROOM_SIZE, 4.2, 0.2], pos: [0, 2, HALF_ROOM] },
+    { size: [0.2, 4.2, ROOM_SIZE], pos: [-HALF_ROOM, 2, 0] },
+    { size: [0.2, 4.2, ROOM_SIZE], pos: [HALF_ROOM, 2, 0] }
+  ];
+
+  for (const item of wallData) {
+    const wall = new THREE.Mesh(
+      new THREE.BoxGeometry(...item.size),
+      wallMaterial
+    );
+    wall.position.set(...item.pos);
+    scene.add(wall);
+    wallMeshes.push(wall);
   }
- }
+
+  // Grid lines on the floor.
+  const grid = new THREE.GridHelper(ROOM_SIZE, 24, 0x555555, 0x666666);
+  grid.position.y = 0.006;
+  scene.add(grid);
+
+  // Subtle grid lines on the walls.
+  const wallGridMaterial = new THREE.LineBasicMaterial({
+    color: 0x777777,
+    transparent: true,
+    opacity: 0.7
+  });
+
+  for (let i = -5; i <= 5; i++) {
+    const vertical = new THREE.BufferGeometry().setFromPoints([
+      new THREE.Vector3(i, 0.02, -5.89),
+      new THREE.Vector3(i, 4.0, -5.89)
+    ]);
+    scene.add(new THREE.Line(vertical, wallGridMaterial));
+
+    const horizontal = new THREE.BufferGeometry().setFromPoints([
+      new THREE.Vector3(-5.89, i * 0.35 + 2, -5.89),
+      new THREE.Vector3(5.89, i * 0.35 + 2, -5.89)
+    ]);
+    scene.add(new THREE.Line(horizontal, wallGridMaterial));
+  }
 }
 
-/* GAME LOOP */
-function animate(now){
- if(!playing){
-  animationId=null;
-  return;
- }
+function makeGunModel() {
+  const group = new THREE.Group();
 
- animationId=requestAnimationFrame(animate);
+  const dark = new THREE.MeshStandardMaterial({
+    color: 0x22252a,
+    metalness: 0.65,
+    roughness: 0.35
+  });
 
- const dt=Math.min((now-previousTime)/1000,.05);
- previousTime=now;
+  const black = new THREE.MeshStandardMaterial({
+    color: 0x101010,
+    metalness: 0.25,
+    roughness: 0.6
+  });
 
- let forward=Number(keys.forward)-Number(keys.backward);
- let sideways=Number(keys.right)-Number(keys.left);
+  const grip = new THREE.Mesh(
+    new THREE.BoxGeometry(0.13, 0.25, 0.14),
+    black
+  );
+  grip.position.set(0, -0.13, 0.04);
+  grip.rotation.x = -0.15;
+  group.add(grip);
 
- const length=Math.hypot(forward,sideways);
- if(length>1){
-  forward/=length;
-  sideways/=length;
- }
+  const body = new THREE.Mesh(
+    new THREE.BoxGeometry(0.19, 0.13, 0.35),
+    dark
+  );
+  body.position.set(0, 0.02, -0.08);
+  group.add(body);
 
- const speed=4*dt;
+  const barrel = new THREE.Mesh(
+    new THREE.BoxGeometry(0.085, 0.075, 0.28),
+    black
+  );
+  barrel.position.set(0, 0.045, -0.36);
+  group.add(barrel);
 
- playerX+=(-Math.sin(yaw)*forward+Math.cos(yaw)*sideways)*speed;
- playerZ+=(-Math.cos(yaw)*forward-Math.sin(yaw)*sideways)*speed;
+  const sight = new THREE.Mesh(
+    new THREE.BoxGeometry(0.045, 0.035, 0.08),
+    black
+  );
+  sight.position.set(0, 0.1, -0.16);
+  group.add(sight);
 
- playerX=THREE.MathUtils.clamp(playerX,-5.35,5.35);
- playerZ=THREE.MathUtils.clamp(playerZ,-5.35,5.35);
+  const detail = new THREE.Mesh(
+    new THREE.BoxGeometry(0.195, 0.025, 0.12),
+    black
+  );
+  detail.position.set(0, 0.09, -0.03);
+  group.add(detail);
 
- updateCamera();
- updateProjectiles(dt);
-
- renderer.render(scene,camera);
+  return group;
 }
 
-/* RESIZE */
-window.addEventListener("resize",()=>{
- if(!renderer||!camera)return;
+function createPickupGun() {
+  if (gunPickup) scene.remove(gunPickup);
 
- camera.aspect=innerWidth/innerHeight;
- camera.updateProjectionMatrix();
- renderer.setSize(innerWidth,innerHeight);
-});
+  gunPickup = makeGunModel();
+  gunPickup.position.set(0, 0.24, 0.7);
+  gunPickup.rotation.x = -0.1;
+  gunPickup.scale.set(1.15, 1.15, 1.15);
+  scene.add(gunPickup);
+}
+
+function pickUpGun() {
+  if (hasGun || !gunPickup) return;
+
+  hasGun = true;
+  scene.remove(gunPickup);
+  gunPickup = null;
+
+  // Keep a visible 3D gun attached to the camera after pickup.
+  heldGun = makeGunModel();
+  heldGun.position.set(0.34, -0.29, -0.65);
+  heldGun.rotation.set(0.02, -0.08, 0);
+  heldGun.scale.set(1.2, 1.2, 1.2);
+  camera.add(heldGun);
+
+  movement.style.display = "grid";
+  shootButton.style.display = "flex";
+  hint.textContent = "Gun picked up! Press SHOOT to fire.";
+}
+
+function attemptPickup(clientX, clientY) {
+  if (!running || hasGun || !gunPickup) return;
+
+  const rect = renderer.domElement.getBoundingClientRect();
+
+  pointer.x = ((clientX - rect.left) / rect.width) * 2 - 1;
+  pointer.y = -((clientY - rect.top) / rect.height) * 2 + 1;
+
+  raycaster.setFromCamera(pointer, camera);
+
+  const hits = raycaster.intersectObject(gunPickup, true);
+
+  if (hits.length > 0) {
+    pickUpGun();
+  }
+}
+
+function setupLookControls() {
+  const canvas = renderer.domElement;
+
+  canvas.addEventListener("pointerdown", (event) => {
+    if (!running) return;
+    if (event.button !== undefined && event.button !== 0) return;
+
+    dragging = true;
+    activePointerId = event.pointerId;
+    pointerMoved = false;
+    lastPointerX = event.clientX;
+    lastPointerY = event.clientY;
+
+    try {
+      canvas.setPointerCapture(event.pointerId);
+    } catch {}
+  });
+
+  canvas.addEventListener("pointermove", (event) => {
+    if (!dragging || event.pointerId !== activePointerId || !running) return;
+
+    const dx = event.clientX - lastPointerX;
+    const dy = event.clientY - lastPointerY;
+
+    if (Math.abs(dx) + Math.abs(dy) > 3) pointerMoved = true;
+
+    yaw -= dx * 0.004;
+    pitch -= dy * 0.004;
+    pitch = THREE.MathUtils.clamp(
+      pitch,
+      -Math.PI / 2 + 0.08,
+      Math.PI / 2 - 0.08
+    );
+
+    lastPointerX = event.clientX;
+    lastPointerY = event.clientY;
+    updateCamera();
+  });
+
+  function finishLook(event) {
+    if (!dragging || event.pointerId !== activePointerId) return;
+
+    const shouldTryPickup = !pointerMoved;
+    dragging = false;
+    activePointerId = null;
+
+    if (shouldTryPickup) {
+      attemptPickup(event.clientX, event.clientY);
+    }
+  }
+
+  canvas.addEventListener("pointerup", finishLook);
+  canvas.addEventListener("pointercancel", () => {
+    dragging = false;
+    activePointerId = null;
+  });
+
+  canvas.addEventListener("lostpointercapture", () => {
+    dragging = false;
+    activePointerId = null;
+  });
+
+  // Prevent browser gestures from interrupting camera movement.
+  canvas.addEventListener("contextmenu", event => event.preventDefault());
+}
+
+function updateCamera() {
+  if (!camera) return;
+  camera.rotation.set(pitch, yaw, 0, "YXZ");
+}
+
+function setupMovementControls() {
+  document.querySelectorAll("[data-move]").forEach(button => {
+    const direction = button.dataset.move;
+
+    const startMove = event => {
+      event.preventDefault();
+      keys[direction] = true;
+      button.setPointerCapture?.(event.pointerId);
+    };
+
+    const stopMove = event => {
+      event.preventDefault();
+      keys[direction] = false;
+    };
+
+    button.addEventListener("pointerdown", startMove);
+    button.addEventListener("pointerup", stopMove);
+    button.addEventListener("pointercancel", stopMove);
+    button.addEventListener("lostpointercapture", () => {
+      keys[direction] = false;
+    });
+  });
+
+  shootButton.addEventListener("pointerdown", event => {
+    event.preventDefault();
+    event.stopPropagation();
+    shoot();
+  });
+}
+
+function setupKeyboard() {
+  window.addEventListener("keydown", event => {
+    if (!running) return;
+
+    switch (event.code) {
+      case "KeyW":
+      case "ArrowUp":
+        keys.forward = true;
+        break;
+      case "KeyS":
+      case "ArrowDown":
+        keys.backward = true;
+        break;
+      case "KeyA":
+      case "ArrowLeft":
+        keys.left = true;
+        break;
+      case "KeyD":
+      case "ArrowRight":
+        keys.right = true;
+        break;
+      case "Escape":
+        if (running) returnToMenu();
+        break;
+    }
+  });
+
+  window.addEventListener("keyup", event => {
+    switch (event.code) {
+      case "KeyW":
+      case "ArrowUp":
+        keys.forward = false;
+        break;
+      case "KeyS":
+      case "ArrowDown":
+        keys.backward = false;
+        break;
+      case "KeyA":
+      case "ArrowLeft":
+        keys.left = false;
+        break;
+      case "KeyD":
+      case "ArrowRight":
+        keys.right = false;
+        break;
+    }
+  });
+
+  window.addEventListener("blur", resetControls);
+}
+
+function resetControls() {
+  keys.forward = false;
+  keys.backward = false;
+  keys.left = false;
+  keys.right = false;
+  dragging = false;
+  activePointerId = null;
+}
+
+function shoot() {
+  if (!running || !hasGun) return;
+
+  const direction = new THREE.Vector3();
+  camera.getWorldDirection(direction);
+
+  const material = new THREE.MeshBasicMaterial({
+    color: 0xffff00,
+    emissive: 0xffff00
+  });
+
+  const bullet = new THREE.Mesh(
+    new THREE.BoxGeometry(0.18, 0.18, 0.48),
+    material
+  );
+
+  const origin = new THREE.Vector3();
+  camera.getWorldPosition(origin);
+
+  bullet.position.copy(origin).addScaledVector(direction, 0.65);
+  bullet.quaternion.setFromUnitVectors(
+    new THREE.Vector3(0, 0, 1),
+    direction.clone().negate()
+  );
+
+  scene.add(bullet);
+
+  projectiles.push({
+    mesh: bullet,
+    velocity: direction.multiplyScalar(42),
+    alive: true,
+    age: 0
+  });
+}
+
+function removeProjectile(projectile) {
+  if (!projectile.alive) return;
+
+  projectile.alive = false;
+  scene.remove(projectile.mesh);
+  projectile.mesh.geometry.dispose();
+  projectile.mesh.material.dispose();
+}
+
+function updateProjectiles(delta) {
+  for (const projectile of projectiles) {
+    if (!projectile.alive) continue;
+
+    projectile.age += delta;
+
+    if (projectile.age > 8) {
+      removeProjectile(projectile);
+      continue;
+    }
+
+    const start = projectile.mesh.position.clone();
+    const step = projectile.velocity.clone().multiplyScalar(delta);
+    const distance = step.length();
+
+    if (distance <= 0) continue;
+
+    const direction = step.clone().normalize();
+
+    // Check the actual wall meshes before moving the yellow rectangle.
+    raycaster.set(start, direction);
+    raycaster.near = 0;
+    raycaster.far = distance + 0.3;
+
+    const hits = raycaster.intersectObjects(wallMeshes, false);
+
+    if (hits.length > 0) {
+      // Make the rectangle disappear as soon as it reaches a wall.
+      removeProjectile(projectile);
+      continue;
+    }
+
+    const nextPosition = start.add(step);
+
+    // Safety bounds in case a projectile somehow passes a wall.
+    if (
+      Math.abs(nextPosition.x) >= HALF_ROOM - 0.12 ||
+      Math.abs(nextPosition.z) >= HALF_ROOM - 0.12 ||
+      nextPosition.y <= 0.12 ||
+      nextPosition.y >= 4.0
+    ) {
+      removeProjectile(projectile);
+      continue;
+    }
+
+    projectile.mesh.position.copy(nextPosition);
+  }
+
+  for (let i = projectiles.length - 1; i >= 0; i--) {
+    if (!projectiles[i].alive) {
+      projectiles.splice(i, 1);
+    }
+  }
+}
+
+function updateMovement(delta) {
+  if (!running) return;
+
+  const forward = new THREE.Vector3(
+    -Math.sin(yaw),
+    0,
+    -Math.cos(yaw)
+  );
+
+  const right = new THREE.Vector3(
+    Math.cos(yaw),
+    0,
+    -Math.sin(yaw)
+  );
+
+  const direction = new THREE.Vector3();
+
+  if (keys.forward) direction.add(forward);
+  if (keys.backward) direction.sub(forward);
+  if (keys.right) direction.add(right);
+  if (keys.left) direction.sub(right);
+
+  if (direction.lengthSq() > 0) {
+    direction.normalize();
+    const speed = 4.5;
+    camera.position.addScaledVector(direction, speed * delta);
+  }
+
+  // Keep the player inside the room.
+  camera.position.x = THREE.MathUtils.clamp(
+    camera.position.x,
+    -HALF_ROOM + PLAYER_RADIUS,
+    HALF_ROOM - PLAYER_RADIUS
+  );
+
+  camera.position.z = THREE.MathUtils.clamp(
+    camera.position.z,
+    -HALF_ROOM + PLAYER_RADIUS,
+    HALF_ROOM - PLAYER_RADIUS
+  );
+
+  camera.position.y = PLAYER_HEIGHT;
+}
+
+function resizeRenderer() {
+  if (!renderer || !camera) return;
+
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+}
+
+function animate() {
+  if (!renderer || !scene || !camera) return;
+
+  const delta = Math.min(clock.getDelta(), 0.05);
+
+  if (running) {
+    updateMovement(delta);
+    updateProjectiles(delta);
+  }
+
+  renderer.render(scene, camera);
+}
 </script>
+
 </body>
 </html>
