@@ -15,7 +15,6 @@ html, body {
     margin: 0;
     width: 100%;
     min-height: 100%;
-    font-family: Arial, sans-serif;
 }
 
 body {
@@ -26,6 +25,7 @@ body {
     background:
         radial-gradient(circle at 50% 40%, #55406f 0%, #352448 45%, #21182f 100%);
     color: white;
+    font-family: Arial, sans-serif;
 }
 
 .machine {
@@ -98,7 +98,6 @@ button:active {
     letter-spacing: 2px;
     color: #ff5555;
 }
-
 </style>
 </head>
 
@@ -125,7 +124,13 @@ const checkButton = document.getElementById("checkButton");
 const result = document.getElementById("result");
 
 function checkCode() {
-    result.textContent = "INVALID CODE";
+    const code = codeInput.value.trim().toUpperCase();
+
+    if (code === "SUBWAY1") {
+        window.location.href = "subway1.html";
+    } else {
+        result.textContent = "INVALID CODE";
+    }
 }
 
 checkButton.addEventListener("click", checkCode);
