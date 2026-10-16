@@ -28,7 +28,10 @@ button{
     font-family:inherit;
     cursor:pointer;
     touch-action:none;
+    -webkit-tap-highlight-color:transparent;
 }
+
+/* MAIN MENU */
 
 #mainScreen{
     position:fixed;
@@ -85,11 +88,8 @@ button{
     box-shadow:0 6px 0 #42375f;
 }
 
-.menuButton:hover{background:#8278d4}
-
 .menuButton:active{
-    transform:translateY(4px);
-    box-shadow:0 2px 0 #42375f;
+    transform:translateY(3px);
 }
 
 .backButton{
@@ -104,12 +104,14 @@ button{
     display:none;
     position:fixed;
     inset:0;
-    background:#858585;
     overflow:hidden;
+    background:#858585;
     touch-action:none;
 }
 
 #gameCanvas{
+    position:absolute;
+    inset:0;
     display:block;
     width:100%;
     height:100%;
@@ -121,7 +123,7 @@ button{
 
 #gameBack{
     position:absolute;
-    z-index:5;
+    z-index:10;
     top:15px;
     left:15px;
     width:100px;
@@ -131,43 +133,46 @@ button{
     color:white;
     font-size:15px;
     box-shadow:0 4px 0 #222;
+    touch-action:manipulation;
 }
 
-/* MOVEMENT ARROWS */
+/* MOVEMENT PAD */
 
 #movement{
     position:absolute;
-    z-index:5;
+    z-index:10;
     top:18px;
     right:18px;
-    width:142px;
-    height:142px;
+    width:150px;
+    height:150px;
     display:grid;
     grid-template-columns:repeat(3,1fr);
     grid-template-rows:repeat(3,1fr);
     gap:5px;
     touch-action:none;
+    pointer-events:none;
 }
 
 .moveButton{
+    pointer-events:auto;
     display:flex;
     align-items:center;
     justify-content:center;
     border:2px solid #dedede;
     border-radius:7px;
-    background:#292929bb;
+    background:#292929d9;
     color:white;
     font-family:Arial,sans-serif;
     font-size:25px;
     font-weight:bold;
-    box-shadow:0 3px 0 #111;
     padding:0;
+    box-shadow:0 3px 0 #111;
     touch-action:none;
 }
 
-.moveButton.active,
-.moveButton:active{
-    background:#727272;
+.moveButton.active{
+    background:#777;
+    border-color:white;
     transform:translateY(2px);
     box-shadow:0 1px 0 #111;
 }
@@ -181,24 +186,24 @@ button{
 
 #hint{
     position:absolute;
-    z-index:4;
-    bottom:16px;
+    z-index:5;
+    bottom:15px;
     left:50%;
     transform:translateX(-50%);
     width:90%;
     text-align:center;
     color:white;
-    font: bold 13px Arial,sans-serif;
+    font:bold 13px Arial,sans-serif;
     text-shadow:1px 2px 3px black;
     pointer-events:none;
 }
 
-/* HELD GUN OVERLAY */
+/* HELD GUN */
 
 #heldGun{
     display:none;
     position:absolute;
-    z-index:3;
+    z-index:4;
     right:5%;
     bottom:-2%;
     width:190px;
@@ -283,8 +288,8 @@ button{
     #movement{
         top:12px;
         right:12px;
-        width:126px;
-        height:126px;
+        width:132px;
+        height:132px;
         gap:4px;
     }
 
@@ -307,22 +312,30 @@ button{
         transform-origin:bottom right;
     }
 
-    #hint{font-size:12px;bottom:12px}
+    #hint{
+        font-size:11px;
+        bottom:10px;
+    }
 }
 </style>
 </head>
 
 <body>
 
+<!-- MAIN MENU -->
+
 <div id="mainScreen">
     <div class="menu">
         <div class="logo">SUBWAY II</div>
+
         <div class="buttons">
             <button class="menuButton" id="playButton">PLAY</button>
             <button class="menuButton backButton" id="menuBackButton">BACK</button>
         </div>
     </div>
 </div>
+
+<!-- GAME -->
 
 <div id="gameScreen">
     <canvas id="gameCanvas"></canvas>
@@ -343,31 +356,48 @@ button{
         <div class="trigger"></div>
     </div>
 
-    <div id="hint">LOOK AROUND • FIND THE GUN • CLICK OR TAP TO PICK IT UP</div>
+    <div id="hint">
+        DRAG TO LOOK • USE ARROWS TO MOVE • TAP GUN TO PICK UP
+    </div>
 </div>
 
 <script type="module">
 import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js";
 
+/* ELEMENTS */
+
 const mainScreen = document.getElementById("mainScreen");
 const gameScreen = document.getElementById("gameScreen");
 const canvas = document.getElementById("gameCanvas");
-const heldGun = document.getElementById("heldGun");
+const heldGunDisplay = document.getElementById("heldGun");
 const hint = document.getElementById("hint");
 
-let renderer, scene, camera, clock;
-let gunPickup, gunHeld;
+let renderer = null;
+let scene = null;
+let camera = null;
+let gunPickup = null;
+let gunHeld = null;
+
 let playing = false;
+let initialized = false;
 let hasGun = false;
-let yaw = 0;
-let pitch = 0;
+
 let playerX = 0;
 let playerZ = 3;
+
+let yaw = 0;
+let pitch = 0;
+
 let dragging = false;
+let dragPointerId = null;
+let dragStartX = 0;
+let dragStartY = 0;
 let lastX = 0;
 let lastY = 0;
 let pointerMoved = false;
-let initialized = false;
+
+let animationId = null;
+let previousTime = 0;
 
 const keys = {
     forward:false,
@@ -379,64 +409,75 @@ const keys = {
 const raycaster = new THREE.Raycaster();
 const pointer = new THREE.Vector2();
 
-function makeMaterial(color, roughness=1) {
+/* MATERIALS AND OBJECTS */
+
+function material(color, roughness=1, metalness=0){
     return new THREE.MeshStandardMaterial({
         color,
         roughness,
-        metalness:0
+        metalness
     });
 }
 
-function addBox(parent, size, position, material) {
+function box(parent,size,position,mat){
     const mesh = new THREE.Mesh(
         new THREE.BoxGeometry(size[0],size[1],size[2]),
-        material
+        mat
     );
+
     mesh.position.set(position[0],position[1],position[2]);
     parent.add(mesh);
+
     return mesh;
 }
 
-function createGun(parent, held=false) {
+/* CREATE 3D GUN */
+
+function createGun(parent,held=false){
     const gun = new THREE.Group();
 
-    const metal = makeMaterial(0x737373);
-    const lightMetal = makeMaterial(0x999999);
-    const darkMetal = makeMaterial(0x292929);
+    const metal = material(0x777777,0.55,0.35);
+    const lightMetal = material(0x999999,0.5,0.35);
+    const darkMetal = material(0x292929,0.8,0.1);
 
-    // Pistol slide and body
-    addBox(gun,[0.20,0.17,0.64],[0,0.05,0],metal);
-    addBox(gun,[0.16,0.09,0.46],[0,0.15,-0.015],lightMetal);
+    // Main body
+    box(gun,[0.20,0.17,0.64],[0,0.05,0],metal);
+
+    // Upper slide
+    box(gun,[0.16,0.09,0.46],[0,0.15,-0.015],lightMetal);
 
     // Barrel
-    addBox(gun,[0.105,0.105,0.36],[0,0.12,-0.47],darkMetal);
-    addBox(gun,[0.07,0.07,0.045],[0,0.12,-0.66],makeMaterial(0x111111));
+    box(gun,[0.105,0.105,0.36],[0,0.12,-0.47],darkMetal);
+    box(gun,[0.07,0.07,0.045],[0,0.12,-0.66],material(0x111111));
 
     // Grip
-    const grip = addBox(
+    const grip = box(
         gun,
         [0.17,0.34,0.20],
         [0,-0.19,0.16],
         darkMetal
     );
-    grip.rotation.x = -0.20;
 
-    // Grip grooves
+    grip.rotation.x=-0.20;
+
+    // Grip lines
     for(let i=0;i<4;i++){
-        const line = addBox(
+        const line=box(
             gun,
             [0.176,0.018,0.205],
             [0,-0.11-i*0.065,0.16],
-            makeMaterial(0x505050)
+            material(0x505050)
         );
+
         line.rotation.x=-0.20;
     }
 
     // Trigger guard
-    const guard = new THREE.Mesh(
+    const guard=new THREE.Mesh(
         new THREE.TorusGeometry(0.075,0.012,6,12,Math.PI),
         darkMetal
     );
+
     guard.rotation.x=Math.PI/2;
     guard.position.set(0,-0.08,0.12);
     gun.add(guard);
@@ -451,10 +492,12 @@ function createGun(parent, held=false) {
     return gun;
 }
 
-function buildWorld() {
+/* BUILD ROOM */
+
+function buildWorld(){
     scene = new THREE.Scene();
     scene.background = new THREE.Color(0x858585);
-    scene.fog = new THREE.Fog(0x858585,18,38);
+    scene.fog = new THREE.Fog(0x858585,22,45);
 
     camera = new THREE.PerspectiveCamera(
         75,
@@ -463,8 +506,8 @@ function buildWorld() {
         100
     );
 
-    camera.position.set(playerX,1.7,playerZ);
     camera.rotation.order="YXZ";
+    camera.position.set(playerX,1.7,playerZ);
 
     renderer = new THREE.WebGLRenderer({
         canvas,
@@ -477,59 +520,80 @@ function buildWorld() {
     renderer.toneMapping=THREE.ACESFilmicToneMapping;
     renderer.toneMappingExposure=1.15;
 
-    clock = new THREE.Clock();
-
+    // Lighting
     scene.add(new THREE.HemisphereLight(0xffffff,0x555555,2));
 
-    const light = new THREE.DirectionalLight(0xffffff,2);
+    const light=new THREE.DirectionalLight(0xffffff,2);
     light.position.set(-4,9,5);
     scene.add(light);
 
-    // Gray room
-    const floorMat=makeMaterial(0x696969);
-    const wallMat=makeMaterial(0x929292);
-    const sideMat=makeMaterial(0x777777);
-    const ceilingMat=makeMaterial(0xa1a1a1);
+    // Room materials
+    const floorMat=material(0x696969);
+    const wallMat=material(0x929292);
+    const sideMat=material(0x777777);
+    const ceilingMat=material(0xa1a1a1);
 
-    addBox(scene,[12,0.2,12],[0,-0.1,0],floorMat);
-    addBox(scene,[12,0.2,12],[0,4.2,0],ceilingMat);
+    // Floor and ceiling
+    box(scene,[12,0.2,12],[0,-0.1,0],floorMat);
+    box(scene,[12,0.2,12],[0,4.2,0],ceilingMat);
 
-    addBox(scene,[12,4,0.2],[0,2,-6],wallMat);
-    addBox(scene,[12,4,0.2],[0,2,6],wallMat);
-    addBox(scene,[0.2,4,12],[-6,2,0],sideMat);
-    addBox(scene,[0.2,4,12],[6,2,0],sideMat);
+    // Walls
+    box(scene,[12,4,0.2],[0,2,-6],wallMat);
+    box(scene,[12,4,0.2],[0,2,6],wallMat);
+    box(scene,[0.2,4,12],[-6,2,0],sideMat);
+    box(scene,[0.2,4,12],[6,2,0],sideMat);
 
-    // A few subtle floor lines
-    const lineMat=makeMaterial(0x626262);
+    // Floor grid
+    const lineMat=material(0x626262);
+
     for(let i=-5;i<=5;i++){
-        addBox(scene,[0.015,0.008,12],[i,-0.001,0],lineMat);
-        addBox(scene,[12,0.008,0.015],[0,-0.001,i],lineMat);
+        box(scene,[0.015,0.008,12],[i,0.006,0],lineMat);
+        box(scene,[12,0.008,0.015],[0,0.006,i],lineMat);
     }
 
-    // Gun lying in front of the player
-    gunPickup = new THREE.Group();
-    gunPickup.position.set(0,0.18,-1.4);
+    // Gun on the floor, ahead of the player
+    gunPickup=new THREE.Group();
+    gunPickup.position.set(0,0.18,0.7);
     gunPickup.rotation.y=0.25;
+
     createGun(gunPickup,false);
     scene.add(gunPickup);
 
-    // Gun attached to camera, hidden until collected
-    gunHeld = createGun(camera,true);
-    gunHeld.visible=false;
-
-    camera.add(scene.remove ? new THREE.Object3D() : new THREE.Object3D());
-    // Camera is rendered using the same scene.
+    // Attach held gun to camera
     scene.add(camera);
+
+    gunHeld=createGun(camera,true);
+    gunHeld.visible=false;
 }
 
-function updateCamera() {
+/* CAMERA */
+
+function updateCamera(){
     camera.rotation.order="YXZ";
     camera.rotation.y=yaw;
     camera.rotation.x=pitch;
+
     camera.position.set(playerX,1.7,playerZ);
 }
 
-function startGame() {
+/* RESET CONTROLS */
+
+function clearControls(){
+    for(const key in keys){
+        keys[key]=false;
+    }
+
+    document.querySelectorAll(".moveButton").forEach(button=>{
+        button.classList.remove("active");
+    });
+
+    dragging=false;
+    dragPointerId=null;
+}
+
+/* START GAME */
+
+function startGame(){
     mainScreen.style.display="none";
     gameScreen.style.display="block";
 
@@ -540,97 +604,49 @@ function startGame() {
 
     playerX=0;
     playerZ=3;
+
     yaw=0;
     pitch=0;
+
     hasGun=false;
 
     gunPickup.visible=true;
     gunHeld.visible=false;
-    heldGun.style.display="none";
+    heldGunDisplay.style.display="none";
 
-    hint.textContent="LOOK AROUND • FIND THE GUN • CLICK OR TAP TO PICK IT UP";
+    hint.textContent="DRAG TO LOOK • USE ARROWS TO MOVE • TAP GUN TO PICK UP";
 
+    clearControls();
     updateCamera();
+
     playing=true;
-    clock.start();
+
+    previousTime=performance.now();
+
+    if(animationId!==null){
+        cancelAnimationFrame(animationId);
+        animationId=null;
+    }
+
+    animate(previousTime);
+
     renderer.setSize(window.innerWidth,window.innerHeight);
-    animate();
 }
 
-function backToMenu() {
-    playing=false;
-    dragging=false;
+/* RETURN TO MENU */
 
-    Object.keys(keys).forEach(k=>keys[k]=false);
+function backToMenu(){
+    playing=false;
+
+    if(animationId!==null){
+        cancelAnimationFrame(animationId);
+        animationId=null;
+    }
+
+    clearControls();
 
     gameScreen.style.display="none";
     mainScreen.style.display="flex";
-}
-
-function pickUpGun() {
-    if(hasGun || !gunPickup) return;
-
-    hasGun=true;
-    gunPickup.visible=false;
-    gunHeld.visible=true;
-    heldGun.style.display="block";
-    hint.textContent="GUN PICKED UP";
-}
-
-function tryPickUp(clientX,clientY) {
-    if(!playing || hasGun) return;
-
-    const rect=canvas.getBoundingClientRect();
-
-    pointer.x=((clientX-rect.left)/rect.width)*2-1;
-    pointer.y=-((clientY-rect.top)/rect.height)*2+1;
-
-    raycaster.setFromCamera(pointer,camera);
-
-    const hits=raycaster.intersectObject(gunPickup,true);
-
-    if(hits.length>0) {
-        pickUpGun();
-    }
-}
-
-function animate() {
-    if(!playing) return;
-
-    requestAnimationFrame(animate);
-
-    const dt=Math.min(clock.getDelta(),0.05);
-
-    const forward=Number(keys.forward)-Number(keys.backward);
-    const sideways=Number(keys.right)-Number(keys.left);
-
-    if(forward!==0 || sideways!==0){
-        const speed=3.5*dt;
-
-        // Move relative to the direction the camera faces.
-        playerX += (
-            Math.sin(yaw)*forward +
-            Math.cos(yaw)*sideways
-        )*speed;
-
-        playerZ += (
-            -Math.cos(yaw)*forward +
-            Math.sin(yaw)*sideways
-        )*speed;
-
-        // Keep the player inside the room.
-        playerX=THREE.MathUtils.clamp(playerX,-5.3,5.3);
-        playerZ=THREE.MathUtils.clamp(playerZ,-5.3,5.3);
-    }
-
-    updateCamera();
-
-    if(gunPickup && gunPickup.visible){
-        gunPickup.rotation.y+=dt*0.45;
-        gunPickup.position.y=0.2+Math.sin(performance.now()*0.002)*0.035;
-    }
-
-    renderer.render(scene,camera);
 }
 
 document.getElementById("playButton").addEventListener("click",startGame);
@@ -641,7 +657,8 @@ document.getElementById("menuBackButton").addEventListener("click",()=>{
 
 document.getElementById("gameBack").addEventListener("click",backToMenu);
 
-/* Arrow buttons: hold to keep moving */
+/* MOVEMENT BUTTONS */
+
 const movementButtons={
     forward:document.getElementById("forward"),
     backward:document.getElementById("backward"),
@@ -650,15 +667,20 @@ const movementButtons={
 };
 
 for(const [direction,button] of Object.entries(movementButtons)){
+
     button.addEventListener("pointerdown",event=>{
         event.preventDefault();
         event.stopPropagation();
+
         keys[direction]=true;
         button.classList.add("active");
-        try{button.setPointerCapture(event.pointerId)}catch(e){}
+
+        try{
+            button.setPointerCapture(event.pointerId);
+        }catch(error){}
     });
 
-    function release(){
+    function release(event){
         keys[direction]=false;
         button.classList.remove("active");
     }
@@ -666,25 +688,32 @@ for(const [direction,button] of Object.entries(movementButtons)){
     button.addEventListener("pointerup",release);
     button.addEventListener("pointercancel",release);
     button.addEventListener("lostpointercapture",release);
-    button.addEventListener("contextmenu",e=>e.preventDefault());
+
+    button.addEventListener("contextmenu",event=>{
+        event.preventDefault();
+    });
 }
 
-/* Keyboard controls also work */
+/* KEYBOARD CONTROLS */
+
+const keyboardMap={
+    ArrowUp:"forward",
+    KeyW:"forward",
+
+    ArrowDown:"backward",
+    KeyS:"backward",
+
+    ArrowLeft:"left",
+    KeyA:"left",
+
+    ArrowRight:"right",
+    KeyD:"right"
+};
+
 window.addEventListener("keydown",event=>{
     if(!playing) return;
 
-    const map={
-        ArrowUp:"forward",
-        KeyW:"forward",
-        ArrowDown:"backward",
-        KeyS:"backward",
-        ArrowLeft:"left",
-        KeyA:"left",
-        ArrowRight:"right",
-        KeyD:"right"
-    };
-
-    const direction=map[event.code];
+    const direction=keyboardMap[event.code];
 
     if(direction){
         keys[direction]=true;
@@ -693,81 +722,190 @@ window.addEventListener("keydown",event=>{
 });
 
 window.addEventListener("keyup",event=>{
-    const map={
-        ArrowUp:"forward",
-        KeyW:"forward",
-        ArrowDown:"backward",
-        KeyS:"backward",
-        ArrowLeft:"left",
-        KeyA:"left",
-        ArrowRight:"right",
-        KeyD:"right"
-    };
+    const direction=keyboardMap[event.code];
 
-    const direction=map[event.code];
-    if(direction) keys[direction]=false;
+    if(direction){
+        keys[direction]=false;
+        event.preventDefault();
+    }
 });
 
-window.addEventListener("blur",()=>{
-    Object.keys(keys).forEach(k=>keys[k]=false);
-});
+window.addEventListener("blur",clearControls);
 
-/* Mouse: hold left button and drag to look around.
-   Touch: drag on the game screen to look around. */
-gameScreen.addEventListener("pointerdown",event=>{
+/* CAMERA LOOK AND GUN PICKUP */
+
+/*
+   Only the canvas handles camera dragging.
+   UI buttons are separate, so pressing movement buttons
+   cannot accidentally rotate the camera.
+*/
+
+canvas.addEventListener("pointerdown",event=>{
     if(!playing) return;
-    if(event.target.closest("button")) return;
 
+    // Desktop: only the left mouse button.
     if(event.pointerType==="mouse" && event.button!==0) return;
 
     dragging=true;
-    pointerMoved=false;
+    dragPointerId=event.pointerId;
+
+    dragStartX=event.clientX;
+    dragStartY=event.clientY;
+
     lastX=event.clientX;
     lastY=event.clientY;
 
-    try{gameScreen.setPointerCapture(event.pointerId)}catch(e){}
+    pointerMoved=false;
+
+    try{
+        canvas.setPointerCapture(event.pointerId);
+    }catch(error){}
+
+    event.preventDefault();
 });
 
-gameScreen.addEventListener("pointermove",event=>{
-    if(!dragging || !playing) return;
+canvas.addEventListener("pointermove",event=>{
+    if(!playing || !dragging || event.pointerId!==dragPointerId) return;
 
     const dx=event.clientX-lastX;
     const dy=event.clientY-lastY;
 
-    if(Math.abs(dx)+Math.abs(dy)>2) pointerMoved=true;
+    if(Math.abs(event.clientX-dragStartX)>3 ||
+       Math.abs(event.clientY-dragStartY)>3){
+        pointerMoved=true;
+    }
 
+    // Horizontal and vertical camera look
     yaw-=dx*0.004;
     pitch-=dy*0.003;
 
-    pitch=THREE.MathUtils.clamp(pitch,-1.15,1.15);
+    // Prevent flipping upside down
+    pitch=THREE.MathUtils.clamp(pitch,-1.35,1.35);
 
     lastX=event.clientX;
     lastY=event.clientY;
+
+    event.preventDefault();
 });
 
-function stopDragging(){
-    dragging=false;
+function attemptPickup(clientX,clientY){
+    if(!playing || hasGun || !gunPickup || !gunPickup.visible) return;
+
+    const rect=canvas.getBoundingClientRect();
+
+    pointer.x=((clientX-rect.left)/rect.width)*2-1;
+    pointer.y=-((clientY-rect.top)/rect.height)*2+1;
+
+    raycaster.setFromCamera(pointer,camera);
+
+    const hits=raycaster.intersectObject(gunPickup,true);
+
+    if(hits.length>0){
+        hasGun=true;
+
+        gunPickup.visible=false;
+        gunHeld.visible=true;
+        heldGunDisplay.style.display="block";
+
+        hint.textContent="GUN PICKED UP";
+    }
 }
 
-gameScreen.addEventListener("pointerup",event=>{
-    if(!dragging) return;
+canvas.addEventListener("pointerup",event=>{
+    if(!dragging || event.pointerId!==dragPointerId) return;
 
-    const wasMoved=pointerMoved;
-    stopDragging();
+    const moved=pointerMoved;
+    const x=event.clientX;
+    const y=event.clientY;
 
-    if(!wasMoved && !event.target.closest("button")){
-        tryPickUp(event.clientX,event.clientY);
+    dragging=false;
+    dragPointerId=null;
+
+    // A tap or click picks up the gun.
+    // A drag only rotates the camera.
+    if(!moved){
+        attemptPickup(x,y);
+    }
+
+    event.preventDefault();
+});
+
+canvas.addEventListener("pointercancel",event=>{
+    if(event.pointerId===dragPointerId){
+        dragging=false;
+        dragPointerId=null;
     }
 });
 
-gameScreen.addEventListener("pointercancel",stopDragging);
-gameScreen.addEventListener("contextmenu",event=>event.preventDefault());
+canvas.addEventListener("contextmenu",event=>{
+    event.preventDefault();
+});
+
+/* GAME LOOP */
+
+function animate(now){
+    if(!playing){
+        animationId=null;
+        return;
+    }
+
+    animationId=requestAnimationFrame(animate);
+
+    const dt=Math.min((now-previousTime)/1000,0.05);
+    previousTime=now;
+
+    // Forward/backward and strafe input
+    let forward=Number(keys.forward)-Number(keys.backward);
+    let sideways=Number(keys.right)-Number(keys.left);
+
+    // Diagonal movement should not be faster
+    const length=Math.hypot(forward,sideways);
+
+    if(length>1){
+        forward/=length;
+        sideways/=length;
+    }
+
+    const speed=4*dt;
+
+    /*
+      Camera faces -Z at yaw = 0.
+      Movement uses the camera's current yaw.
+    */
+
+    playerX += (
+        -Math.sin(yaw)*forward +
+        Math.cos(yaw)*sideways
+    )*speed;
+
+    playerZ += (
+        -Math.cos(yaw)*forward -
+        Math.sin(yaw)*sideways
+    )*speed;
+
+    // Stay inside the room
+    playerX=THREE.MathUtils.clamp(playerX,-5.35,5.35);
+    playerZ=THREE.MathUtils.clamp(playerZ,-5.35,5.35);
+
+    updateCamera();
+
+    // Gentle floating animation for the pickup
+    if(gunPickup && gunPickup.visible){
+        gunPickup.rotation.y+=dt*0.35;
+        gunPickup.position.y=0.18+Math.sin(now*0.002)*0.025;
+    }
+
+    renderer.render(scene,camera);
+}
+
+/* RESIZE */
 
 window.addEventListener("resize",()=>{
     if(!renderer || !camera) return;
 
     camera.aspect=window.innerWidth/window.innerHeight;
     camera.updateProjectionMatrix();
+
     renderer.setSize(window.innerWidth,window.innerHeight);
 });
 </script>
