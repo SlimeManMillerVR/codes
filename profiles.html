@@ -1,0 +1,142 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PROFILES</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+html, body {
+    margin: 0;
+    width: 100%;
+    min-height: 100%;
+}
+
+body {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #c4a17e;
+    font-family: Arial, sans-serif;
+    color: white;
+}
+
+.profile-screen {
+    width: min(440px, 90%);
+    padding: 32px 26px;
+    background: #8d6b4e;
+    border: 1px solid #6f5037;
+    border-radius: 8px;
+    box-shadow: 0 10px 30px #60452d40;
+    text-align: center;
+}
+
+h1 {
+    margin: 0 0 28px;
+    font-size: 28px;
+    font-weight: 900;
+    letter-spacing: 5px;
+    color: #f6e7d5;
+}
+
+.search-bar {
+    display: flex;
+    width: 100%;
+    gap: 8px;
+}
+
+input {
+    min-width: 0;
+    flex: 1;
+    padding: 14px 12px;
+    background: #ead8c2;
+    border: 1px solid #6f5037;
+    border-radius: 4px;
+    outline: none;
+    color: #382719;
+    font-size: 15px;
+}
+
+input::placeholder {
+    color: #80664e;
+}
+
+input:focus {
+    border-color: #fff0dc;
+    box-shadow: 0 0 8px #ffffff40;
+}
+
+button {
+    padding: 0 16px;
+    background: #5d402c;
+    border: 1px solid #49301f;
+    border-radius: 4px;
+    color: white;
+    font-size: 12px;
+    font-weight: bold;
+    letter-spacing: 1px;
+    cursor: pointer;
+}
+
+button:hover {
+    background: #704e35;
+}
+
+#result {
+    display: none;
+    margin-top: 24px;
+    color: #ffe1d9;
+    font-size: 14px;
+    font-weight: bold;
+    letter-spacing: 2px;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="profile-screen">
+    <h1>PROFILES</h1>
+
+    <div class="search-bar">
+        <input
+            type="text"
+            id="searchInput"
+            placeholder="SEARCH"
+            autocomplete="off"
+        >
+
+        <button id="searchButton">SEARCH</button>
+    </div>
+
+    <div id="result">COULDN'T FIND PROFILE</div>
+</div>
+
+<script>
+const searchInput = document.getElementById("searchInput");
+const searchButton = document.getElementById("searchButton");
+const result = document.getElementById("result");
+
+function searchProfile() {
+    result.style.display = "block";
+    result.textContent = "COULDN'T FIND PROFILE";
+}
+
+searchButton.addEventListener("click", searchProfile);
+
+searchInput.addEventListener("keydown", function(event) {
+    if (event.key === "Enter") {
+        searchProfile();
+    }
+});
+</script>
+
+</body>
+</html>
