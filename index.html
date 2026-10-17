@@ -26,6 +26,7 @@ body {
         radial-gradient(circle at 50% 40%, #55406f 0%, #352448 45%, #21182f 100%);
     color: white;
     font-family: Arial, sans-serif;
+    padding: 70px 0 55px;
 }
 
 .machine {
@@ -45,7 +46,7 @@ h1 {
     font-weight: 800;
 }
 
-input {
+input, textarea {
     width: 100%;
     padding: 14px;
     background: #17121f;
@@ -54,15 +55,18 @@ input {
     outline: none;
     color: white;
     font-size: 15px;
+}
+
+#codeInput {
     text-align: center;
     letter-spacing: 1px;
 }
 
-input::placeholder {
+input::placeholder, textarea::placeholder {
     color: #8e819b;
 }
 
-input:focus {
+input:focus, textarea:focus {
     border-color: #b58cde;
     box-shadow: 0 0 10px #78549b55;
 }
@@ -97,12 +101,176 @@ button:active {
     font-weight: bold;
     letter-spacing: 2px;
     color: #ff5555;
+    overflow-wrap: anywhere;
+}
+
+/* LIVE ANNOUNCEMENT */
+
+#announcementBar {
+    display: none;
+    position: fixed;
+    z-index: 10;
+    top: 12px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: min(700px, calc(100% - 24px));
+    padding: 14px 18px;
+    border: 1px solid #b58cde;
+    border-radius: 8px;
+    background: rgba(20, 15, 29, 0.97);
+    box-shadow: 0 0 20px #78549b44;
+    text-align: center;
+    overflow-wrap: anywhere;
+}
+
+.announcement-label {
+    display: block;
+    margin-bottom: 6px;
+    color: #cba8f0;
+    font-size: 10px;
+    font-weight: bold;
+    letter-spacing: 3px;
+}
+
+#announcementText {
+    font-size: 14px;
+    line-height: 1.5;
+    white-space: pre-wrap;
+}
+
+/* ADMIN BUTTON */
+
+#adminToggle {
+    position: fixed;
+    z-index: 20;
+    right: 15px;
+    bottom: 15px;
+    width: auto;
+    margin: 0;
+    padding: 11px 16px;
+    border: 1px solid #765b91;
+    background: #21182f;
+    font-size: 11px;
+    letter-spacing: 2px;
+}
+
+/* ADMIN PANEL */
+
+#adminPanel {
+    display: none;
+    position: fixed;
+    z-index: 30;
+    inset: 0;
+    padding: 18px;
+    background: rgba(8, 6, 13, 0.82);
+    justify-content: center;
+    align-items: center;
+}
+
+.admin-box {
+    position: relative;
+    width: min(400px, 100%);
+    max-height: 90vh;
+    overflow-y: auto;
+    padding: 28px 24px;
+    background: #20182b;
+    border: 1px solid #765b91;
+    border-radius: 10px;
+    box-shadow: 0 0 35px #0008;
+}
+
+.admin-box h2 {
+    margin: 0 35px 22px 0;
+    font-size: 19px;
+    letter-spacing: 3px;
+}
+
+#closeAdmin {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 34px;
+    height: 34px;
+    margin: 0;
+    padding: 0;
+    background: #392b48;
+    font-size: 20px;
+    letter-spacing: 0;
+}
+
+.admin-field {
+    margin-top: 12px;
+}
+
+.admin-field label {
+    display: block;
+    margin-bottom: 7px;
+    color: #c5b0d8;
+    font-size: 11px;
+    letter-spacing: 1px;
+}
+
+.admin-field input,
+.admin-field textarea {
+    font-size: 14px;
+}
+
+.admin-field textarea {
+    min-height: 110px;
+    resize: vertical;
+    font-family: Arial, sans-serif;
+}
+
+#adminStatus {
+    margin-top: 14px;
+    font-size: 12px;
+    line-height: 1.5;
+    color: #d7c5e9;
+    overflow-wrap: anywhere;
+}
+
+#logoutButton {
+    background: #493052;
+}
+
+#postButton:disabled,
+#loginButton:disabled {
+    opacity: 0.55;
+    cursor: wait;
+}
+
+.admin-note {
+    margin-top: 12px;
+    color: #9f90ac;
+    font-size: 11px;
+    line-height: 1.5;
+}
+
+@media (max-width: 420px) {
+    .machine {
+        padding: 28px 20px;
+    }
+
+    h1 {
+        font-size: 23px;
+    }
+
+    #announcementText {
+        font-size: 13px;
+    }
 }
 </style>
 </head>
 
 <body>
 
+<!-- LIVE ANNOUNCEMENT -->
+<div id="announcementBar" role="status" aria-live="polite">
+    <span class="announcement-label">ANNOUNCEMENT</span>
+    <div id="announcementText"></div>
+</div>
+
+<!-- ORIGINAL CODE MACHINE -->
 <div class="machine">
     <h1>CODE MACHINE</h1>
 
@@ -118,24 +286,131 @@ button:active {
     <div id="result"></div>
 </div>
 
-<script>
+<!-- ADMIN BUTTON -->
+<button id="adminToggle" type="button">ADMIN</button>
+
+<!-- ADMIN PANEL -->
+<div id="adminPanel">
+    <div class="admin-box">
+        <button id="closeAdmin" type="button" aria-label="Close">X</button>
+
+        <h2>ADMIN PANEL</h2>
+
+        <div id="loginSection">
+            <div class="admin-field">
+                <label for="adminEmail">EMAIL</label>
+                <input
+                    id="adminEmail"
+                    type="email"
+                    placeholder="Admin email"
+                    autocomplete="username"
+                >
+            </div>
+
+            <div class="admin-field">
+                <label for="adminPassword">PASSWORD</label>
+                <input
+                    id="adminPassword"
+                    type="password"
+                    placeholder="Admin password"
+                    autocomplete="current-password"
+                >
+            </div>
+
+            <button id="loginButton" type="button">LOGIN</button>
+        </div>
+
+        <div id="publisherSection" style="display:none">
+            <div class="admin-field">
+                <label for="announcementInput">ANNOUNCEMENT MESSAGE</label>
+                <textarea
+                    id="announcementInput"
+                    maxlength="500"
+                    placeholder="Write an announcement..."
+                ></textarea>
+            </div>
+
+            <button id="postButton" type="button">PUBLISH ANNOUNCEMENT</button>
+            <button id="clearButton" type="button">CLEAR ANNOUNCEMENT</button>
+            <button id="logoutButton" type="button">LOG OUT</button>
+        </div>
+
+        <div id="adminStatus" role="status" aria-live="polite"></div>
+
+        <div class="admin-note">
+            Only the authorized administrator can publish announcements.
+        </div>
+    </div>
+</div>
+
+<script type="module">
+import { initializeApp } from
+    "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+
+import {
+    getAuth,
+    signInWithEmailAndPassword,
+    signOut,
+    onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+import {
+    getDatabase,
+    ref,
+    onValue,
+    set
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+/*
+  IMPORTANT:
+  Replace these placeholder values with your Firebase web app config.
+  Firebase Console -> Project settings -> General -> Your apps.
+*/
+const firebaseConfig = {
+    apiKey: "YOUR_API_KEY",
+    authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+    databaseURL: "YOUR_DATABASE_URL",
+    projectId: "YOUR_PROJECT_ID",
+    storageBucket: "YOUR_PROJECT_ID.firebasestorage.app",
+    messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+    appId: "YOUR_APP_ID"
+};
+
+/* Authorized administrator UID */
+const ADMIN_UID = "udkvYC3s6lQ2eb6Qc2OlWEwijEU2";
+
 const codeInput = document.getElementById("codeInput");
 const checkButton = document.getElementById("checkButton");
 const result = document.getElementById("result");
+
+const announcementBar = document.getElementById("announcementBar");
+const announcementText = document.getElementById("announcementText");
+
+const adminToggle = document.getElementById("adminToggle");
+const adminPanel = document.getElementById("adminPanel");
+const closeAdmin = document.getElementById("closeAdmin");
+
+const loginSection = document.getElementById("loginSection");
+const publisherSection = document.getElementById("publisherSection");
+const adminEmail = document.getElementById("adminEmail");
+const adminPassword = document.getElementById("adminPassword");
+const loginButton = document.getElementById("loginButton");
+const announcementInput = document.getElementById("announcementInput");
+const postButton = document.getElementById("postButton");
+const clearButton = document.getElementById("clearButton");
+const logoutButton = document.getElementById("logoutButton");
+const adminStatus = document.getElementById("adminStatus");
 
 function checkCode() {
     const code = codeInput.value.trim().toUpperCase();
 
     if (code === "SUBWAY1") {
         window.location.href = "subway1.html";
-    } 
-    else if (code === "SUBWAY2") {
+    } else if (code === "SUBWAY2") {
         window.location.href = "subway2.html";
-    } 
-    else if (code === "PROFILE") {
+    } else if (code === "PROFILE") {
         window.location.href = "profiles.html";
-    } 
-    else {
+    } else {
         result.textContent = "INVALID CODE";
     }
 }
@@ -145,6 +420,238 @@ checkButton.addEventListener("click", checkCode);
 codeInput.addEventListener("keydown", function(event) {
     if (event.key === "Enter") {
         checkCode();
+    }
+});
+
+codeInput.addEventListener("input", function() {
+    result.textContent = "";
+});
+
+/* Admin panel controls */
+
+adminToggle.addEventListener("click", () => {
+    adminPanel.style.display = "flex";
+});
+
+closeAdmin.addEventListener("click", () => {
+    adminPanel.style.display = "none";
+});
+
+adminPanel.addEventListener("click", event => {
+    if (event.target === adminPanel) {
+        adminPanel.style.display = "none";
+    }
+});
+
+document.addEventListener("keydown", event => {
+    if (event.key === "Escape") {
+        adminPanel.style.display = "none";
+    }
+});
+
+function showStatus(message, isError = false) {
+    adminStatus.textContent = message;
+    adminStatus.style.color = isError ? "#ff7777" : "#c5f5c5";
+}
+
+function showLogin() {
+    loginSection.style.display = "block";
+    publisherSection.style.display = "none";
+}
+
+function showPublisher() {
+    loginSection.style.display = "none";
+    publisherSection.style.display = "block";
+}
+
+/* Connect to Firebase */
+
+const isConfigured =
+    firebaseConfig.apiKey !== "YOUR_API_KEY" &&
+    firebaseConfig.projectId !== "YOUR_PROJECT_ID" &&
+    firebaseConfig.databaseURL !== "YOUR_DATABASE_URL" &&
+    firebaseConfig.appId !== "YOUR_APP_ID";
+
+let auth = null;
+let database = null;
+let announcementRef = null;
+let currentAdmin = false;
+
+if (!isConfigured) {
+    showLogin();
+    loginButton.disabled = true;
+    showStatus(
+        "Firebase is not configured yet. Add your Firebase web app config to the code.",
+        true
+    );
+} else {
+    try {
+        const app = initializeApp(firebaseConfig);
+        auth = getAuth(app);
+        database = getDatabase(app);
+        announcementRef = ref(database, "announcement");
+
+        /* Everyone can listen for live announcement updates */
+        onValue(
+            announcementRef,
+            snapshot => {
+                const message = snapshot.val();
+
+                if (typeof message === "string" && message.trim() !== "") {
+                    announcementText.textContent = message;
+                    announcementBar.style.display = "block";
+                } else {
+                    announcementText.textContent = "";
+                    announcementBar.style.display = "none";
+                }
+            },
+            error => {
+                console.error("Announcement read failed:", error);
+                showStatus(
+                    "Could not load announcements. Check your Firebase rules and database URL.",
+                    true
+                );
+            }
+        );
+
+        /* Only the authorized UID gets the publishing controls */
+        onAuthStateChanged(auth, user => {
+            currentAdmin = Boolean(user && user.uid === ADMIN_UID);
+
+            if (currentAdmin) {
+                showPublisher();
+                showStatus("Admin authenticated.");
+            } else {
+                showLogin();
+
+                if (user) {
+                    showStatus("This account is not authorized as admin.", true);
+                } else {
+                    showStatus("Log in with your administrator account.");
+                }
+            }
+        });
+
+    } catch (error) {
+        console.error("Firebase initialization failed:", error);
+        showLogin();
+        loginButton.disabled = true;
+        showStatus("Firebase setup failed. Check your configuration.", true);
+    }
+}
+
+/* Admin login */
+
+loginButton.addEventListener("click", async () => {
+    if (!auth) return;
+
+    const email = adminEmail.value.trim();
+    const password = adminPassword.value;
+
+    if (!email || !password) {
+        showStatus("Enter your email and password.", true);
+        return;
+    }
+
+    loginButton.disabled = true;
+    showStatus("Logging in...");
+
+    try {
+        const credential = await signInWithEmailAndPassword(
+            auth,
+            email,
+            password
+        );
+
+        if (credential.user.uid !== ADMIN_UID) {
+            await signOut(auth);
+            showStatus("This account is not authorized as admin.", true);
+        }
+    } catch (error) {
+        console.error("Login failed:", error);
+        showStatus("Login failed. Check your email and password.", true);
+    } finally {
+        loginButton.disabled = false;
+    }
+});
+
+adminPassword.addEventListener("keydown", event => {
+    if (event.key === "Enter") {
+        loginButton.click();
+    }
+});
+
+/* Publish announcement */
+
+postButton.addEventListener("click", async () => {
+    if (!auth || !announcementRef) return;
+
+    const user = auth.currentUser;
+    const message = announcementInput.value.trim();
+
+    if (!user || user.uid !== ADMIN_UID || !currentAdmin) {
+        showStatus("You are not authorized to publish.", true);
+        return;
+    }
+
+    if (!message) {
+        showStatus("Write an announcement first.", true);
+        return;
+    }
+
+    postButton.disabled = true;
+    showStatus("Publishing...");
+
+    try {
+        await set(announcementRef, message);
+        announcementInput.value = "";
+        showStatus("Announcement published!");
+    } catch (error) {
+        console.error("Publish failed:", error);
+        showStatus("Publish failed. Check your database rules.", true);
+    } finally {
+        postButton.disabled = false;
+    }
+});
+
+/* Clear announcement */
+
+clearButton.addEventListener("click", async () => {
+    if (!auth || !announcementRef) return;
+
+    const user = auth.currentUser;
+
+    if (!user || user.uid !== ADMIN_UID || !currentAdmin) {
+        showStatus("You are not authorized to clear announcements.", true);
+        return;
+    }
+
+    clearButton.disabled = true;
+    showStatus("Clearing announcement...");
+
+    try {
+        await set(announcementRef, null);
+        showStatus("Announcement cleared.");
+    } catch (error) {
+        console.error("Clear failed:", error);
+        showStatus("Could not clear the announcement.", true);
+    } finally {
+        clearButton.disabled = false;
+    }
+});
+
+/* Admin logout */
+
+logoutButton.addEventListener("click", async () => {
+    if (!auth) return;
+
+    try {
+        await signOut(auth);
+        adminPassword.value = "";
+        showStatus("Logged out.");
+    } catch (error) {
+        console.error("Logout failed:", error);
+        showStatus("Could not log out.", true);
     }
 });
 </script>
