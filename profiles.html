@@ -55,6 +55,7 @@ h1 {
 input {
     min-width: 0;
     flex: 1;
+    width: 100%;
     padding: 14px 12px;
     background: #ead8c2;
     border: 1px solid #6f5037;
@@ -98,7 +99,7 @@ button:hover {
     letter-spacing: 2px;
 }
 
-#fileProfile {
+.profile-card {
     display: none;
     margin-top: 28px;
     padding: 18px;
@@ -131,6 +132,9 @@ button:hover {
 }
 
 .profile-name {
+    display: flex;
+    align-items: center;
+    gap: 7px;
     color: #fff0df;
     font-size: 18px;
     font-weight: 900;
@@ -141,6 +145,13 @@ button:hover {
     color: #d2b69b;
     font-size: 12px;
     letter-spacing: 1px;
+}
+
+.verified-star {
+    color: #36a9ff;
+    font-size: 21px;
+    line-height: 1;
+    letter-spacing: 0;
 }
 
 .close-button {
@@ -155,7 +166,6 @@ button:hover {
 .close-button:hover {
     background: #382316;
 }
-
 </style>
 </head>
 
@@ -177,17 +187,35 @@ button:hover {
 
     <div id="result">COULDN'T FIND PROFILE</div>
 
-    <div id="fileProfile">
+    <!-- FILES PROFILE -->
+    <div class="profile-card" id="filesProfile">
         <div class="profile-info">
             <div class="profile-circle"></div>
 
             <div class="profile-text">
-                <div class="profile-name">FILES</div>
+                <div class="profile-name">
+                    FILES
+                    <span class="verified-star">★</span>
+                </div>
                 <div class="profile-tag">#FILE</div>
             </div>
         </div>
 
-        <button class="close-button" id="closeButton">CLOSE</button>
+        <button class="close-button">CLOSE</button>
+    </div>
+
+    <!-- COOLEST_GUY PROFILE -->
+    <div class="profile-card" id="coolestProfile">
+        <div class="profile-info">
+            <div class="profile-circle"></div>
+
+            <div class="profile-text">
+                <div class="profile-name">COOLEST_GUY</div>
+                <div class="profile-tag">#COOLEST</div>
+            </div>
+        </div>
+
+        <button class="close-button">CLOSE</button>
     </div>
 </div>
 
@@ -195,18 +223,28 @@ button:hover {
 const searchInput = document.getElementById("searchInput");
 const searchButton = document.getElementById("searchButton");
 const result = document.getElementById("result");
-const fileProfile = document.getElementById("fileProfile");
-const closeButton = document.getElementById("closeButton");
+
+const filesProfile = document.getElementById("filesProfile");
+const coolestProfile = document.getElementById("coolestProfile");
+
+function hideProfiles() {
+    filesProfile.style.display = "none";
+    coolestProfile.style.display = "none";
+}
 
 function searchProfile() {
     const search = searchInput.value.trim().toUpperCase();
 
-    fileProfile.style.display = "none";
+    hideProfiles();
     result.style.display = "none";
 
-    if (search === "FILE") {
-        fileProfile.style.display = "block";
-    } else {
+    if (search === "FILE" || search === "FILES") {
+        filesProfile.style.display = "block";
+    }
+    else if (search === "COOLEST") {
+        coolestProfile.style.display = "block";
+    }
+    else {
         result.textContent = "COULDN'T FIND PROFILE";
         result.style.display = "block";
     }
@@ -220,8 +258,10 @@ searchInput.addEventListener("keydown", function(event) {
     }
 });
 
-closeButton.addEventListener("click", function() {
-    fileProfile.style.display = "none";
+document.querySelectorAll(".close-button").forEach(function(button) {
+    button.addEventListener("click", function() {
+        button.closest(".profile-card").style.display = "none";
+    });
 });
 </script>
 
