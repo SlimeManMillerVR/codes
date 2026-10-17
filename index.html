@@ -7,9 +7,7 @@
 <title>CODE MACHINE</title>
 
 <style>
-* {
-    box-sizing: border-box;
-}
+* { box-sizing: border-box; }
 
 html, body {
     margin: 0;
@@ -22,11 +20,10 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    background:
-        radial-gradient(circle at 50% 40%, #55406f 0%, #352448 45%, #21182f 100%);
+    padding: 75px 0;
+    background: radial-gradient(circle at 50% 40%, #55406f 0%, #352448 45%, #21182f 100%);
     color: white;
     font-family: Arial, sans-serif;
-    padding: 70px 0 55px;
 }
 
 .machine {
@@ -86,13 +83,8 @@ button {
     transition: background 0.2s, transform 0.2s;
 }
 
-button:hover {
-    background: #9065b8;
-}
-
-button:active {
-    transform: scale(0.98);
-}
+button:hover { background: #9065b8; }
+button:active { transform: scale(0.98); }
 
 #result {
     min-height: 18px;
@@ -104,7 +96,7 @@ button:active {
     overflow-wrap: anywhere;
 }
 
-/* LIVE ANNOUNCEMENT */
+/* ANNOUNCEMENT */
 
 #announcementBar {
     display: none;
@@ -138,7 +130,7 @@ button:active {
     white-space: pre-wrap;
 }
 
-/* ADMIN BUTTON */
+/* ADMIN */
 
 #adminToggle {
     position: fixed;
@@ -151,10 +143,7 @@ button:active {
     border: 1px solid #765b91;
     background: #21182f;
     font-size: 11px;
-    letter-spacing: 2px;
 }
-
-/* ADMIN PANEL */
 
 #adminPanel {
     display: none;
@@ -198,9 +187,7 @@ button:active {
     letter-spacing: 0;
 }
 
-.admin-field {
-    margin-top: 12px;
-}
+.admin-field { margin-top: 12px; }
 
 .admin-field label {
     display: block;
@@ -210,8 +197,7 @@ button:active {
     letter-spacing: 1px;
 }
 
-.admin-field input,
-.admin-field textarea {
+.admin-field input, .admin-field textarea {
     font-size: 14px;
 }
 
@@ -229,15 +215,7 @@ button:active {
     overflow-wrap: anywhere;
 }
 
-#logoutButton {
-    background: #493052;
-}
-
-#postButton:disabled,
-#loginButton:disabled {
-    opacity: 0.55;
-    cursor: wait;
-}
+#logoutButton { background: #493052; }
 
 .admin-note {
     margin-top: 12px;
@@ -247,30 +225,20 @@ button:active {
 }
 
 @media (max-width: 420px) {
-    .machine {
-        padding: 28px 20px;
-    }
-
-    h1 {
-        font-size: 23px;
-    }
-
-    #announcementText {
-        font-size: 13px;
-    }
+    .machine { padding: 28px 20px; }
+    h1 { font-size: 23px; }
+    #announcementText { font-size: 13px; }
 }
 </style>
 </head>
 
 <body>
 
-<!-- LIVE ANNOUNCEMENT -->
 <div id="announcementBar" role="status" aria-live="polite">
     <span class="announcement-label">ANNOUNCEMENT</span>
     <div id="announcementText"></div>
 </div>
 
-<!-- ORIGINAL CODE MACHINE -->
 <div class="machine">
     <h1>CODE MACHINE</h1>
 
@@ -282,14 +250,11 @@ button:active {
     >
 
     <button id="checkButton">CHECK</button>
-
     <div id="result"></div>
 </div>
 
-<!-- ADMIN BUTTON -->
 <button id="adminToggle" type="button">ADMIN</button>
 
-<!-- ADMIN PANEL -->
 <div id="adminPanel">
     <div class="admin-box">
         <button id="closeAdmin" type="button" aria-label="Close">X</button>
@@ -299,22 +264,14 @@ button:active {
         <div id="loginSection">
             <div class="admin-field">
                 <label for="adminEmail">EMAIL</label>
-                <input
-                    id="adminEmail"
-                    type="email"
-                    placeholder="Admin email"
-                    autocomplete="username"
-                >
+                <input id="adminEmail" type="email"
+                       placeholder="Admin email" autocomplete="username">
             </div>
 
             <div class="admin-field">
                 <label for="adminPassword">PASSWORD</label>
-                <input
-                    id="adminPassword"
-                    type="password"
-                    placeholder="Admin password"
-                    autocomplete="current-password"
-                >
+                <input id="adminPassword" type="password"
+                       placeholder="Admin password" autocomplete="current-password">
             </div>
 
             <button id="loginButton" type="button">LOGIN</button>
@@ -323,11 +280,8 @@ button:active {
         <div id="publisherSection" style="display:none">
             <div class="admin-field">
                 <label for="announcementInput">ANNOUNCEMENT MESSAGE</label>
-                <textarea
-                    id="announcementInput"
-                    maxlength="500"
-                    placeholder="Write an announcement..."
-                ></textarea>
+                <textarea id="announcementInput" maxlength="500"
+                          placeholder="Write an announcement..."></textarea>
             </div>
 
             <button id="postButton" type="button">PUBLISH ANNOUNCEMENT</button>
@@ -361,297 +315,227 @@ import {
     set
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
-/*
-  IMPORTANT:
-  Replace these placeholder values with your Firebase web app config.
-  Firebase Console -> Project settings -> General -> Your apps.
-*/
+/* YOUR FIREBASE CONFIGURATION */
 const firebaseConfig = {
-    apiKey: "YOUR_API_KEY",
-    authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-    databaseURL: "YOUR_DATABASE_URL",
-    projectId: "YOUR_PROJECT_ID",
-    storageBucket: "YOUR_PROJECT_ID.firebasestorage.app",
-    messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-    appId: "YOUR_APP_ID"
+    apiKey: "AIzaSyBDcW0zOlMWTathHTrSk-ur6Jb4NTGRqfE",
+    authDomain: "hub-announcements.firebaseapp.com",
+    databaseURL: "https://hub-announcements-default-rtdb.firebaseio.com",
+    projectId: "hub-announcements",
+    storageBucket: "hub-announcements.firebasestorage.app",
+    messagingSenderId: "90090581221",
+    appId: "1:90090581221:web:3f0ff32f7666a01fc8780c"
 };
 
-/* Authorized administrator UID */
+/* ADMIN UID */
 const ADMIN_UID = "udkvYC3s6lQ2eb6Qc2OlWEwijEU2";
 
-const codeInput = document.getElementById("codeInput");
-const checkButton = document.getElementById("checkButton");
-const result = document.getElementById("result");
+const $ = id => document.getElementById(id);
 
-const announcementBar = document.getElementById("announcementBar");
-const announcementText = document.getElementById("announcementText");
-
-const adminToggle = document.getElementById("adminToggle");
-const adminPanel = document.getElementById("adminPanel");
-const closeAdmin = document.getElementById("closeAdmin");
-
-const loginSection = document.getElementById("loginSection");
-const publisherSection = document.getElementById("publisherSection");
-const adminEmail = document.getElementById("adminEmail");
-const adminPassword = document.getElementById("adminPassword");
-const loginButton = document.getElementById("loginButton");
-const announcementInput = document.getElementById("announcementInput");
-const postButton = document.getElementById("postButton");
-const clearButton = document.getElementById("clearButton");
-const logoutButton = document.getElementById("logoutButton");
-const adminStatus = document.getElementById("adminStatus");
+const codeInput = $("codeInput");
+const result = $("result");
 
 function checkCode() {
     const code = codeInput.value.trim().toUpperCase();
 
     if (code === "SUBWAY1") {
-        window.location.href = "subway1.html";
+        location.href = "subway1.html";
     } else if (code === "SUBWAY2") {
-        window.location.href = "subway2.html";
+        location.href = "subway2.html";
     } else if (code === "PROFILE") {
-        window.location.href = "profiles.html";
+        location.href = "profiles.html";
     } else {
         result.textContent = "INVALID CODE";
     }
 }
 
-checkButton.addEventListener("click", checkCode);
+$("checkButton").addEventListener("click", checkCode);
 
-codeInput.addEventListener("keydown", function(event) {
-    if (event.key === "Enter") {
-        checkCode();
-    }
+codeInput.addEventListener("keydown", event => {
+    if (event.key === "Enter") checkCode();
 });
 
-codeInput.addEventListener("input", function() {
+codeInput.addEventListener("input", () => {
     result.textContent = "";
 });
 
-/* Admin panel controls */
+/* PANEL CONTROLS */
 
-adminToggle.addEventListener("click", () => {
-    adminPanel.style.display = "flex";
+$("adminToggle").addEventListener("click", () => {
+    $("adminPanel").style.display = "flex";
 });
 
-closeAdmin.addEventListener("click", () => {
-    adminPanel.style.display = "none";
-});
+function closePanel() {
+    $("adminPanel").style.display = "none";
+}
 
-adminPanel.addEventListener("click", event => {
-    if (event.target === adminPanel) {
-        adminPanel.style.display = "none";
-    }
+$("closeAdmin").addEventListener("click", closePanel);
+
+$("adminPanel").addEventListener("click", event => {
+    if (event.target === $("adminPanel")) closePanel();
 });
 
 document.addEventListener("keydown", event => {
-    if (event.key === "Escape") {
-        adminPanel.style.display = "none";
-    }
+    if (event.key === "Escape") closePanel();
 });
 
-function showStatus(message, isError = false) {
-    adminStatus.textContent = message;
-    adminStatus.style.color = isError ? "#ff7777" : "#c5f5c5";
+function status(message, error = false) {
+    $("adminStatus").textContent = message;
+    $("adminStatus").style.color = error ? "#ff7777" : "#c5f5c5";
 }
 
 function showLogin() {
-    loginSection.style.display = "block";
-    publisherSection.style.display = "none";
+    $("loginSection").style.display = "block";
+    $("publisherSection").style.display = "none";
 }
 
 function showPublisher() {
-    loginSection.style.display = "none";
-    publisherSection.style.display = "block";
+    $("loginSection").style.display = "none";
+    $("publisherSection").style.display = "block";
 }
 
-/* Connect to Firebase */
+/* FIREBASE */
 
-const isConfigured =
-    firebaseConfig.apiKey !== "YOUR_API_KEY" &&
-    firebaseConfig.projectId !== "YOUR_PROJECT_ID" &&
-    firebaseConfig.databaseURL !== "YOUR_DATABASE_URL" &&
-    firebaseConfig.appId !== "YOUR_APP_ID";
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getDatabase(app);
+const announcementRef = ref(db, "announcement");
 
-let auth = null;
-let database = null;
-let announcementRef = null;
-let currentAdmin = false;
+let isAdmin = false;
 
-if (!isConfigured) {
-    showLogin();
-    loginButton.disabled = true;
-    showStatus(
-        "Firebase is not configured yet. Add your Firebase web app config to the code.",
-        true
-    );
-} else {
-    try {
-        const app = initializeApp(firebaseConfig);
-        auth = getAuth(app);
-        database = getDatabase(app);
-        announcementRef = ref(database, "announcement");
+/* LIVE ANNOUNCEMENTS FOR EVERY VISITOR */
 
-        /* Everyone can listen for live announcement updates */
-        onValue(
-            announcementRef,
-            snapshot => {
-                const message = snapshot.val();
+onValue(announcementRef, snapshot => {
+    const message = snapshot.val();
 
-                if (typeof message === "string" && message.trim() !== "") {
-                    announcementText.textContent = message;
-                    announcementBar.style.display = "block";
-                } else {
-                    announcementText.textContent = "";
-                    announcementBar.style.display = "none";
-                }
-            },
-            error => {
-                console.error("Announcement read failed:", error);
-                showStatus(
-                    "Could not load announcements. Check your Firebase rules and database URL.",
-                    true
-                );
-            }
-        );
-
-        /* Only the authorized UID gets the publishing controls */
-        onAuthStateChanged(auth, user => {
-            currentAdmin = Boolean(user && user.uid === ADMIN_UID);
-
-            if (currentAdmin) {
-                showPublisher();
-                showStatus("Admin authenticated.");
-            } else {
-                showLogin();
-
-                if (user) {
-                    showStatus("This account is not authorized as admin.", true);
-                } else {
-                    showStatus("Log in with your administrator account.");
-                }
-            }
-        });
-
-    } catch (error) {
-        console.error("Firebase initialization failed:", error);
-        showLogin();
-        loginButton.disabled = true;
-        showStatus("Firebase setup failed. Check your configuration.", true);
+    if (typeof message === "string" && message.trim()) {
+        $("announcementText").textContent = message;
+        $("announcementBar").style.display = "block";
+    } else {
+        $("announcementText").textContent = "";
+        $("announcementBar").style.display = "none";
     }
-}
+}, error => {
+    console.error("Announcement read error:", error);
+});
 
-/* Admin login */
+/* AUTHENTICATION */
 
-loginButton.addEventListener("click", async () => {
-    if (!auth) return;
+onAuthStateChanged(auth, user => {
+    isAdmin = !!user && user.uid === ADMIN_UID;
 
-    const email = adminEmail.value.trim();
-    const password = adminPassword.value;
+    if (isAdmin) {
+        showPublisher();
+        status("Admin authenticated.");
+    } else {
+        showLogin();
+
+        if (user) {
+            status("This account is not authorized.", true);
+        } else {
+            status("Log in with your administrator account.");
+        }
+    }
+});
+
+/* LOGIN */
+
+$("loginButton").addEventListener("click", async () => {
+    const email = $("adminEmail").value.trim();
+    const password = $("adminPassword").value;
 
     if (!email || !password) {
-        showStatus("Enter your email and password.", true);
+        status("Enter your email and password.", true);
         return;
     }
 
-    loginButton.disabled = true;
-    showStatus("Logging in...");
+    $("loginButton").disabled = true;
+    status("Logging in...");
 
     try {
         const credential = await signInWithEmailAndPassword(
-            auth,
-            email,
-            password
+            auth, email, password
         );
 
         if (credential.user.uid !== ADMIN_UID) {
             await signOut(auth);
-            showStatus("This account is not authorized as admin.", true);
+            status("This account is not authorized as admin.", true);
         }
     } catch (error) {
-        console.error("Login failed:", error);
-        showStatus("Login failed. Check your email and password.", true);
+        console.error(error);
+        status("Login failed. Check your email and password.", true);
     } finally {
-        loginButton.disabled = false;
+        $("loginButton").disabled = false;
     }
 });
 
-adminPassword.addEventListener("keydown", event => {
-    if (event.key === "Enter") {
-        loginButton.click();
-    }
+$("adminPassword").addEventListener("keydown", event => {
+    if (event.key === "Enter") $("loginButton").click();
 });
 
-/* Publish announcement */
+/* PUBLISH */
 
-postButton.addEventListener("click", async () => {
-    if (!auth || !announcementRef) return;
-
+$("postButton").addEventListener("click", async () => {
     const user = auth.currentUser;
-    const message = announcementInput.value.trim();
+    const message = $("announcementInput").value.trim();
 
-    if (!user || user.uid !== ADMIN_UID || !currentAdmin) {
-        showStatus("You are not authorized to publish.", true);
+    if (!user || user.uid !== ADMIN_UID || !isAdmin) {
+        status("Not authorized to publish.", true);
         return;
     }
 
     if (!message) {
-        showStatus("Write an announcement first.", true);
+        status("Write an announcement first.", true);
         return;
     }
 
-    postButton.disabled = true;
-    showStatus("Publishing...");
+    $("postButton").disabled = true;
+    status("Publishing...");
 
     try {
         await set(announcementRef, message);
-        announcementInput.value = "";
-        showStatus("Announcement published!");
+        $("announcementInput").value = "";
+        status("Announcement published!");
     } catch (error) {
-        console.error("Publish failed:", error);
-        showStatus("Publish failed. Check your database rules.", true);
+        console.error(error);
+        status("Publish failed. Check your database rules.", true);
     } finally {
-        postButton.disabled = false;
+        $("postButton").disabled = false;
     }
 });
 
-/* Clear announcement */
+/* CLEAR ANNOUNCEMENT */
 
-clearButton.addEventListener("click", async () => {
-    if (!auth || !announcementRef) return;
-
+$("clearButton").addEventListener("click", async () => {
     const user = auth.currentUser;
 
-    if (!user || user.uid !== ADMIN_UID || !currentAdmin) {
-        showStatus("You are not authorized to clear announcements.", true);
+    if (!user || user.uid !== ADMIN_UID || !isAdmin) {
+        status("Not authorized to clear announcements.", true);
         return;
     }
 
-    clearButton.disabled = true;
-    showStatus("Clearing announcement...");
+    $("clearButton").disabled = true;
 
     try {
         await set(announcementRef, null);
-        showStatus("Announcement cleared.");
+        status("Announcement cleared.");
     } catch (error) {
-        console.error("Clear failed:", error);
-        showStatus("Could not clear the announcement.", true);
+        console.error(error);
+        status("Could not clear the announcement.", true);
     } finally {
-        clearButton.disabled = false;
+        $("clearButton").disabled = false;
     }
 });
 
-/* Admin logout */
+/* LOG OUT */
 
-logoutButton.addEventListener("click", async () => {
-    if (!auth) return;
-
+$("logoutButton").addEventListener("click", async () => {
     try {
         await signOut(auth);
-        adminPassword.value = "";
-        showStatus("Logged out.");
+        $("adminPassword").value = "";
+        status("Logged out.");
     } catch (error) {
-        console.error("Logout failed:", error);
-        showStatus("Could not log out.", true);
+        console.error(error);
+        status("Could not log out.", true);
     }
 });
 </script>
