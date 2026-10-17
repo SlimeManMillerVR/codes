@@ -22,6 +22,7 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
+    padding: 25px 0;
     background: #c4a17e;
     font-family: Arial, sans-serif;
     color: white;
@@ -73,7 +74,7 @@ input:focus {
 }
 
 button {
-    padding: 0 16px;
+    padding: 12px 16px;
     background: #5d402c;
     border: 1px solid #49301f;
     border-radius: 4px;
@@ -97,6 +98,64 @@ button:hover {
     letter-spacing: 2px;
 }
 
+#fileProfile {
+    display: none;
+    margin-top: 28px;
+    padding: 18px;
+    background: #6f5039;
+    border: 1px solid #543b29;
+    border-radius: 7px;
+    text-align: left;
+}
+
+.profile-info {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    min-height: 66px;
+}
+
+.profile-circle {
+    width: 58px;
+    height: 58px;
+    min-width: 58px;
+    border-radius: 50%;
+    background: #c9a17c;
+    border: 2px solid #e0c1a0;
+}
+
+.profile-text {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+}
+
+.profile-name {
+    color: #fff0df;
+    font-size: 18px;
+    font-weight: 900;
+    letter-spacing: 2px;
+}
+
+.profile-tag {
+    color: #d2b69b;
+    font-size: 12px;
+    letter-spacing: 1px;
+}
+
+.close-button {
+    display: block;
+    width: 100%;
+    margin-top: 22px;
+    padding: 12px;
+    background: #49301f;
+    border: 1px solid #3b2619;
+}
+
+.close-button:hover {
+    background: #382316;
+}
+
 </style>
 </head>
 
@@ -117,16 +176,40 @@ button:hover {
     </div>
 
     <div id="result">COULDN'T FIND PROFILE</div>
+
+    <div id="fileProfile">
+        <div class="profile-info">
+            <div class="profile-circle"></div>
+
+            <div class="profile-text">
+                <div class="profile-name">FILES</div>
+                <div class="profile-tag">#FILE</div>
+            </div>
+        </div>
+
+        <button class="close-button" id="closeButton">CLOSE</button>
+    </div>
 </div>
 
 <script>
 const searchInput = document.getElementById("searchInput");
 const searchButton = document.getElementById("searchButton");
 const result = document.getElementById("result");
+const fileProfile = document.getElementById("fileProfile");
+const closeButton = document.getElementById("closeButton");
 
 function searchProfile() {
-    result.style.display = "block";
-    result.textContent = "COULDN'T FIND PROFILE";
+    const search = searchInput.value.trim().toUpperCase();
+
+    fileProfile.style.display = "none";
+    result.style.display = "none";
+
+    if (search === "FILE") {
+        fileProfile.style.display = "block";
+    } else {
+        result.textContent = "COULDN'T FIND PROFILE";
+        result.style.display = "block";
+    }
 }
 
 searchButton.addEventListener("click", searchProfile);
@@ -135,6 +218,10 @@ searchInput.addEventListener("keydown", function(event) {
     if (event.key === "Enter") {
         searchProfile();
     }
+});
+
+closeButton.addEventListener("click", function() {
+    fileProfile.style.display = "none";
 });
 </script>
 
