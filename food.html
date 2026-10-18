@@ -1,0 +1,308 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FOOD</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+html, body {
+    margin: 0;
+    width: 100%;
+    min-height: 100%;
+}
+
+body {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #c9a477;
+    font-family: Arial, sans-serif;
+    color: #fff0d9;
+}
+
+/* MAIN MENU */
+
+.menu {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 18px;
+    width: min(300px, 85%);
+}
+
+.menu-button {
+    width: 100%;
+    min-height: 58px;
+    padding: 16px;
+    background: #50321f;
+    border: 2px solid #3b2518;
+    border-radius: 5px;
+    color: #fff0d9;
+    font-size: 16px;
+    font-weight: 800;
+    letter-spacing: 3px;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.2s;
+}
+
+.menu-button:hover {
+    background: #69452c;
+}
+
+.menu-button:active {
+    transform: scale(0.97);
+}
+
+/* INVENTORY OVERLAY */
+
+#inventoryOverlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 10;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    background: rgba(43, 27, 16, 0.65);
+}
+
+/* INVENTORY WINDOW */
+
+.inventory-window {
+    position: relative;
+    width: min(700px, 100%);
+    min-height: 420px;
+    max-height: 85vh;
+    overflow-y: auto;
+    padding: 75px 28px 30px;
+    background: #d8b58b;
+    border: 3px solid #50321f;
+    border-radius: 8px;
+    box-shadow: 0 12px 45px rgba(40, 23, 12, 0.4);
+}
+
+/* INV LABEL */
+
+#inventoryTitle {
+    position: absolute;
+    top: 20px;
+    left: 24px;
+    margin: 0;
+    color: #50321f;
+    font-size: 24px;
+    font-weight: 900;
+    letter-spacing: 4px;
+}
+
+/* CLOSE BUTTON */
+
+#closeInventory {
+    position: absolute;
+    top: 14px;
+    right: 16px;
+    width: 42px;
+    height: 42px;
+    border: 2px solid #3b2518;
+    border-radius: 4px;
+    background: #50321f;
+    color: white;
+    font-size: 22px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+#closeInventory:hover {
+    background: #69452c;
+}
+
+/* ITEM LIST */
+
+.inventory-items {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.inventory-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    min-height: 58px;
+    padding: 15px 18px;
+    background: #bd9569;
+    border: 2px solid #8d6846;
+    border-radius: 5px;
+    color: #402817;
+    font-size: 16px;
+    font-weight: 800;
+    letter-spacing: 1px;
+}
+
+.item-count {
+    flex-shrink: 0;
+    color: #50321f;
+    font-size: 16px;
+}
+
+/* MORE COMING SOON */
+
+.coming-soon {
+    margin: 28px 0 0;
+    color: #50321f;
+    text-align: center;
+    font-size: 14px;
+    font-weight: 900;
+    letter-spacing: 3px;
+}
+
+/* RESPONSIVE */
+
+@media (max-width: 480px) {
+    .inventory-window {
+        min-height: 380px;
+        padding: 70px 16px 24px;
+    }
+
+    #inventoryTitle {
+        left: 18px;
+        font-size: 21px;
+    }
+
+    .inventory-item {
+        font-size: 14px;
+        padding: 14px 12px;
+    }
+
+    .coming-soon {
+        font-size: 12px;
+        letter-spacing: 2px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<!-- MAIN BUTTONS -->
+
+<main class="menu">
+    <button
+        class="menu-button"
+        id="inventoryButton"
+        type="button"
+    >
+        INVENTORY
+    </button>
+
+    <button
+        class="menu-button"
+        id="purchaseButton"
+        type="button"
+    >
+        PURCHASE
+    </button>
+</main>
+
+<!-- INVENTORY PANEL -->
+
+<div id="inventoryOverlay">
+    <section
+        class="inventory-window"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="inventoryTitle"
+    >
+
+        <h1 id="inventoryTitle">INV</h1>
+
+        <button
+            id="closeInventory"
+            type="button"
+            aria-label="Close inventory"
+        >
+            X
+        </button>
+
+        <div class="inventory-items">
+
+            <div class="inventory-item">
+                <span>EGG</span>
+                <span class="item-count">0X</span>
+            </div>
+
+            <div class="inventory-item">
+                <span>BREAD</span>
+                <span class="item-count">0X</span>
+            </div>
+
+            <div class="inventory-item">
+                <span>BACON</span>
+                <span class="item-count">0X</span>
+            </div>
+
+            <div class="inventory-item">
+                <span>BACON AND EGGS</span>
+                <span class="item-count">0X</span>
+            </div>
+
+        </div>
+
+        <p class="coming-soon">MORE COMING SOON</p>
+
+    </section>
+</div>
+
+<script>
+const inventoryButton = document.getElementById("inventoryButton");
+const inventoryOverlay = document.getElementById("inventoryOverlay");
+const closeInventory = document.getElementById("closeInventory");
+const purchaseButton = document.getElementById("purchaseButton");
+
+/* OPEN INVENTORY */
+
+inventoryButton.addEventListener("click", () => {
+    inventoryOverlay.style.display = "flex";
+});
+
+/* CLOSE INVENTORY */
+
+closeInventory.addEventListener("click", () => {
+    inventoryOverlay.style.display = "none";
+});
+
+/* CLOSE WHEN CLICKING OUTSIDE */
+
+inventoryOverlay.addEventListener("click", event => {
+    if (event.target === inventoryOverlay) {
+        inventoryOverlay.style.display = "none";
+    }
+});
+
+/* CLOSE WITH ESCAPE */
+
+document.addEventListener("keydown", event => {
+    if (
+        event.key === "Escape" &&
+        inventoryOverlay.style.display === "flex"
+    ) {
+        inventoryOverlay.style.display = "none";
+    }
+});
+
+/* PURCHASE BUTTON */
+
+purchaseButton.addEventListener("click", () => {
+    // Purchase feature coming soon.
+});
+</script>
+
+</body>
+</html>
